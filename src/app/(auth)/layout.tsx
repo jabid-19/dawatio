@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -7,12 +8,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       {/* Left panel */}
       <div className="bg-surface flex flex-col px-8 py-12 lg:px-16">
         <div className="mb-12">
-          <Link
-            href="/"
-            className="text-2xl font-bold text-ink hover:text-accent transition-colors"
-            style={{ fontFamily: 'var(--font-playfair)' }}
-          >
-            Dawat
+          <Link href="/" className="inline-flex items-center justify-center bg-accent rounded-xl px-4 py-2">
+            <Image src="/logo.png" alt="Dawat" width={90} height={30} style={{ objectFit: 'contain' }} />
           </Link>
         </div>
         <div className="flex-1 flex items-center justify-center">
@@ -63,9 +60,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           >
             Beautiful invitations,<br />made simple
           </p>
-          <p className="mt-4 text-sm font-mono tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Dawat
-          </p>
+          <div className="mt-6 opacity-50">
+            <Image src="/logo.png" alt="Dawat" width={80} height={28} style={{ objectFit: 'contain' }} />
+          </div>
         </div>
       </div>
     </div>
