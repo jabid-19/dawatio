@@ -1,6 +1,11 @@
+import type { Metadata } from 'next'
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (

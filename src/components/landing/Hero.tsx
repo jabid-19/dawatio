@@ -195,13 +195,13 @@ export default function Hero() {
           >
             Celebrate Every Moment
           </motion.h1>
-          <motion.h1
+          <motion.h2
             variants={fadeUp}
             className="flex flex-wrap items-center justify-center gap-3 text-5xl sm:text-6xl lg:text-[72px] font-bold text-gray-600 leading-[1.1] tracking-tight mt-1"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
             The Digital Invitation Studio
-          </motion.h1>
+          </motion.h2>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.7fr_1fr] gap-6 lg:gap-10 items-start">

@@ -222,8 +222,28 @@ const merriweather = Merriweather({
 })
 
 export const metadata: Metadata = {
-  title: 'Dawat — Invite with elegance',
+  metadataBase: new URL('https://dawatio.vercel.app'),
+  title: {
+    default: 'Dawat — Invite with elegance',
+    template: '%s | Dawat',
+  },
   description: 'Create beautiful digital invitation websites for weddings, birthdays, and every celebration — in minutes.',
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Dawat',
+    title: 'Dawat — Invite with elegance',
+    description: 'Create beautiful digital invitation websites for weddings, birthdays, and every celebration — in minutes.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Dawat — Digital Invitation Studio' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Dawat — Invite with elegance',
+    description: 'Create beautiful digital invitation websites for weddings, birthdays, and every celebration — in minutes.',
+    images: ['/og-image.png'],
+  },
 }
 
 const fontVars = [
