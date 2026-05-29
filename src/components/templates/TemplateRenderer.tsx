@@ -32,12 +32,18 @@ import ModernLoveTemplate from './engagement/ModernLoveTemplate'
 import StoryTemplate from './engagement/StoryTemplate'
 import CelestialTemplate from './engagement/CelestialTemplate'
 
-// ─── Eid ──────────────────────────────────────────────────────────────────────
-import CrescentTemplate from './eid/CrescentTemplate'
-import LanternTemplate from './eid/LanternTemplate'
-import IftarTableTemplate from './eid/IftarTableTemplate'
-import GeometricTemplate from './eid/GeometricTemplate'
-import FestiveNightTemplate from './eid/FestiveNightTemplate'
+// ─── Festive ──────────────────────────────────────────────────────────────────
+import CrescentTemplate from './festive/CrescentTemplate'
+import LanternTemplate from './festive/LanternTemplate'
+import IftarTableTemplate from './festive/IftarTableTemplate'
+import GeometricTemplate from './festive/GeometricTemplate'
+import FestiveNightTemplate from './festive/FestiveNightTemplate'
+import DiyasTemplate from './festive/DiyasTemplate'
+import FloralMandapTemplate from './festive/FloralMandapTemplate'
+import GoldenPrayerTemplate from './festive/GoldenPrayerTemplate'
+import MidnightGalaTemplate from './festive/MidnightGalaTemplate'
+import FireworksNightTemplate from './festive/FireworksNightTemplate'
+import MidnightGlamTemplate from './festive/MidnightGlamTemplate'
 
 // ─── Other ────────────────────────────────────────────────────────────────────
 import SimpleTemplate from './other/SimpleTemplate'
@@ -115,12 +121,18 @@ export default function TemplateRenderer({ event, disableEffects }: TemplateRend
     case 'modern-love':   return <ModernLoveTemplate {...props} />
     case 'story':         return <StoryTemplate {...props} />
     case 'celestial':     return <CelestialTemplate {...props} />
-    // Eid
-    case 'crescent':      return <CrescentTemplate {...props} />
-    case 'lantern':       return <LanternTemplate {...props} />
-    case 'iftar-table':   return <IftarTableTemplate {...props} />
-    case 'geometric':     return <GeometricTemplate {...props} />
-    case 'festive-night': return <FestiveNightTemplate {...props} />
+    // Festive
+    case 'crescent':       return <CrescentTemplate {...props} />
+    case 'lantern':        return <LanternTemplate {...props} />
+    case 'iftar-table':    return <IftarTableTemplate {...props} />
+    case 'geometric':      return <GeometricTemplate {...props} />
+    case 'festive-night':  return <FestiveNightTemplate {...props} />
+    case 'puja-diyas':     return <DiyasTemplate {...props} />
+    case 'puja-mandap':    return <FloralMandapTemplate {...props} />
+    case 'puja-gold':      return <GoldenPrayerTemplate {...props} />
+    case 'nye-gala':       return <MidnightGalaTemplate {...props} />
+    case 'nye-fireworks':  return <FireworksNightTemplate {...props} />
+    case 'nye-glam':       return <MidnightGlamTemplate {...props} />
     // Other
     case 'simple':        return <SimpleTemplate {...props} />
     case 'reunion':       return <ReunionTemplate {...props} />

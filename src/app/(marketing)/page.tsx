@@ -7,7 +7,7 @@ import Testimonials from '@/components/landing/Testimonials'
 import Footer from '@/components/landing/Footer'
 
 export const metadata: Metadata = {
-  title: 'Dawat — Invite with elegance',
+  title: 'Dawatio — Invite with elegance',
   description: 'Create beautiful digital invitation websites for weddings, birthdays, and every celebration — in minutes. Free to start, no subscription.',
   alternates: { canonical: '/' },
 }
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
-  name: 'Dawat',
+  name: 'Dawatio',
   applicationCategory: 'UtilitiesApplication',
   operatingSystem: 'Web',
   description: 'Create beautiful digital invitation websites for weddings, birthdays, and every celebration — in minutes.',

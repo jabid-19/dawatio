@@ -11,7 +11,7 @@ const EVENT_GRADIENTS: Record<string, string> = {
   wedding: 'linear-gradient(135deg, #C9622F 0%, #D4A853 100%)',
   birthday: 'linear-gradient(135deg, #E85D9A 0%, #F5C842 100%)',
   engagement: 'linear-gradient(135deg, #4A2C7A 0%, #D4A853 100%)',
-  eid: 'linear-gradient(135deg, #3D7A5A 0%, #D4A853 100%)',
+  festive: 'linear-gradient(135deg, #3D7A5A 0%, #D4A853 100%)',
   corporate: 'linear-gradient(135deg, #1A1714 0%, #6B6560 100%)',
   other: 'linear-gradient(135deg, #6B6560 0%, #B5B0AA 100%)',
 }

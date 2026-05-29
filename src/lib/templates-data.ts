@@ -1,4 +1,4 @@
-export type TemplateCategory = 'wedding' | 'birthday' | 'corporate' | 'engagement' | 'eid' | 'other'
+export type TemplateCategory = 'wedding' | 'birthday' | 'corporate' | 'engagement' | 'festive' | 'other'
 
 export interface ColorScheme {
   id: number
@@ -527,11 +527,11 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     ],
   },
 
-  // ─── Eid ───────────────────────────────────────────────────
+  // ─── Festive ───────────────────────────────────────────────
   {
     id: 'crescent',
     name: 'Crescent',
-    category: 'eid',
+    category: 'festive',
     isPremium: false,
     description: 'Traditional warm family-oriented Eid gathering design',
     personality: 'Traditional, warm, family-oriented',
@@ -544,13 +544,13 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       textMuted: '#6B7A60',
     },
     fonts: { display: 'Amiri', body: 'DM Sans', displayVar: '--font-amiri', bodyVar: '--font-dm-sans' },
-    previewTags: ['eid', 'traditional', 'warm'],
+    previewTags: ['festive', 'traditional', 'warm'],
     colorSchemes: [],
   },
   {
     id: 'lantern',
     name: 'Lantern',
-    category: 'eid',
+    category: 'festive',
     isPremium: true,
     description: 'Festive glowing night celebration with amber lanterns',
     personality: 'Festive, glowing, night celebration',
@@ -573,7 +573,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
   {
     id: 'iftar-table',
     name: 'Iftar Table',
-    category: 'eid',
+    category: 'festive',
     isPremium: true,
     description: 'Warm intimate food-focused Iftar gathering invitation',
     personality: 'Warm, intimate, food-focused',
@@ -596,7 +596,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
   {
     id: 'geometric',
     name: 'Geometric',
-    category: 'eid',
+    category: 'festive',
     isPremium: true,
     description: 'Modern Islamic geometric pattern-driven clean design',
     personality: 'Modern Islamic aesthetic, pattern-driven, clean',
@@ -619,7 +619,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
   {
     id: 'festive-night',
     name: 'Festive Night',
-    category: 'eid',
+    category: 'festive',
     isPremium: true,
     description: 'Grand celebratory Eid party with gold and ruby accents',
     personality: 'Grand, celebratory, Eid party',
@@ -637,6 +637,148 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 1, label: 'Gold',   bg: '#080808', surface: '#161616', primary: '#D4A853', secondary: '#9B1C1C', text: '#F0E8D8', muted: '#8A8070' },
       { id: 2, label: 'Purple', bg: '#080812', surface: '#14142A', primary: '#9B4EAA', secondary: '#D4A853', text: '#F0E8F8', muted: '#8A80A0' },
       { id: 3, label: 'Teal',   bg: '#040C0C', surface: '#0A1818', primary: '#00B8A8', secondary: '#D4A853', text: '#E0F8F8', muted: '#6A9A9A' },
+    ],
+  },
+
+  // ─── Festive: Puja ─────────────────────────────────────────
+  {
+    id: 'puja-diyas',
+    name: 'Diyas',
+    category: 'festive',
+    isPremium: true,
+    description: 'Warm saffron and vermillion celebration of light for Puja',
+    personality: 'Warm, devotional, luminous, traditional South Asian',
+    colors: {
+      primary: '#D4622F',
+      secondary: '#E8A030',
+      accent: '#C9622F',
+      background: '#FDF6EE',
+      text: '#2C1810',
+      textMuted: '#8A6A50',
+    },
+    fonts: { display: 'Playfair Display', body: 'DM Sans', displayVar: '--font-playfair', bodyVar: '--font-dm-sans' },
+    previewTags: ['puja', 'diyas', 'warm'],
+    colorSchemes: [
+      { id: 1, label: 'Saffron',    bg: '#FDF6EE', surface: '#F5E0C8', primary: '#D4622F', secondary: '#E8A030', text: '#2C1810', muted: '#8A6A50' },
+      { id: 2, label: 'Marigold',   bg: '#FFF8E8', surface: '#F5E8C0', primary: '#B8860B', secondary: '#D4622F', text: '#2C2010', muted: '#8A7050' },
+      { id: 3, label: 'Vermillion', bg: '#FFF0F0', surface: '#F5D8D8', primary: '#8B1A2B', secondary: '#D4622F', text: '#2C0810', muted: '#8A5060' },
+    ],
+  },
+  {
+    id: 'puja-mandap',
+    name: 'Floral Mandap',
+    category: 'festive',
+    isPremium: true,
+    description: 'Marigold and crimson mandap floral celebration design',
+    personality: 'Floral, festive, vibrant, South Asian celebration',
+    colors: {
+      primary: '#C9622F',
+      secondary: '#D4A853',
+      accent: '#8B1A2B',
+      background: '#FBF5EC',
+      text: '#2C2010',
+      textMuted: '#8A7060',
+    },
+    fonts: { display: 'Lora', body: 'Nunito Sans', displayVar: '--font-lora', bodyVar: '--font-nunito' },
+    previewTags: ['puja', 'mandap', 'floral'],
+    colorSchemes: [
+      { id: 1, label: 'Marigold', bg: '#FBF5EC', surface: '#F0E0C0', primary: '#C9622F', secondary: '#D4A853', text: '#2C2010', muted: '#8A7060' },
+      { id: 2, label: 'Rose',     bg: '#FDF5F8', surface: '#F5E0E8', primary: '#8B3A5A', secondary: '#D4A853', text: '#2C1020', muted: '#8A6070' },
+      { id: 3, label: 'Forest',   bg: '#F5FAF5', surface: '#E0F0E0', primary: '#2A6B3A', secondary: '#D4A853', text: '#1A2A1A', muted: '#5A7A5A' },
+    ],
+  },
+  {
+    id: 'puja-gold',
+    name: 'Golden Prayer',
+    category: 'festive',
+    isPremium: true,
+    description: 'Deep maroon and gold traditional prayer aesthetic',
+    personality: 'Devotional, opulent, traditional, spiritual',
+    colors: {
+      primary: '#8B1A2B',
+      secondary: '#D4A853',
+      accent: '#C9A84C',
+      background: '#FDFAF5',
+      text: '#2C1810',
+      textMuted: '#8A7060',
+    },
+    fonts: { display: 'EB Garamond', body: 'Poppins', displayVar: '--font-eb-garamond', bodyVar: '--font-poppins' },
+    previewTags: ['puja', 'prayer', 'gold'],
+    colorSchemes: [
+      { id: 1, label: 'Maroon',  bg: '#FDFAF5', surface: '#F0E8D0', primary: '#8B1A2B', secondary: '#D4A853', text: '#2C1810', muted: '#8A7060' },
+      { id: 2, label: 'Purple',  bg: '#FAF5FF', surface: '#EDE0F8', primary: '#5B2C6F', secondary: '#D4A853', text: '#2A1030', muted: '#7A6A8A' },
+      { id: 3, label: 'Teal',    bg: '#F0FAF8', surface: '#D8F0EC', primary: '#1A5C5A', secondary: '#E8A030', text: '#0A2020', muted: '#5A7A78' },
+    ],
+  },
+
+  // ─── Festive: New Year's Eve ────────────────────────────────
+  {
+    id: 'nye-gala',
+    name: 'Midnight Gala',
+    category: 'festive',
+    isPremium: true,
+    description: 'Black-tie New Year celebration with champagne and gold',
+    personality: 'Glamorous, celebratory, elegant, black-tie',
+    colors: {
+      primary: '#D4A853',
+      secondary: '#F2E6C9',
+      accent: '#C9A84C',
+      background: '#0A0A0A',
+      text: '#F2E6C9',
+      textMuted: '#8A8070',
+    },
+    fonts: { display: 'Cormorant Garamond', body: 'Montserrat', displayVar: '--font-cormorant', bodyVar: '--font-montserrat' },
+    previewTags: ['new year', 'gala', 'champagne'],
+    colorSchemes: [
+      { id: 1, label: 'Champagne', bg: '#0A0A0A', surface: '#1A1A1A', primary: '#D4A853', secondary: '#F2E6C9', text: '#F2E6C9', muted: '#8A8070' },
+      { id: 2, label: 'Silver',   bg: '#080810', surface: '#141420', primary: '#C0C0C8', secondary: '#E0E0E8', text: '#F0F0F8', muted: '#8A8A90' },
+      { id: 3, label: 'Rose Gold', bg: '#0A0808', surface: '#1A1010', primary: '#C8826A', secondary: '#F0C8B8', text: '#F8EDE8', muted: '#9A7A70' },
+    ],
+  },
+  {
+    id: 'nye-fireworks',
+    name: 'Fireworks Night',
+    category: 'festive',
+    isPremium: true,
+    description: 'Dark navy with bursting gold fireworks New Year design',
+    personality: 'Dramatic, explosive, celebratory, night sky',
+    colors: {
+      primary: '#1E3A8A',
+      secondary: '#D4A853',
+      accent: '#C9A84C',
+      background: '#030818',
+      text: '#E8EAF6',
+      textMuted: '#8A8AB0',
+    },
+    fonts: { display: 'Syne', body: 'Inter', displayVar: '--font-syne', bodyVar: '--font-inter' },
+    previewTags: ['new year', 'fireworks', 'navy'],
+    colorSchemes: [
+      { id: 1, label: 'Navy Gold',  bg: '#030818', surface: '#0D1830', primary: '#D4A853', secondary: '#F0D890', text: '#E8EAF6', muted: '#8A8AB0' },
+      { id: 2, label: 'Midnight',   bg: '#080308', surface: '#180818', primary: '#C85CF6', secondary: '#E8A0F8', text: '#F8EAF8', muted: '#A070B0' },
+      { id: 3, label: 'Teal Burst', bg: '#020C10', surface: '#081820', primary: '#00C8B8', secondary: '#80E8D8', text: '#E0F8F8', muted: '#6A9A9A' },
+    ],
+  },
+  {
+    id: 'nye-glam',
+    name: 'Midnight Glam',
+    category: 'festive',
+    isPremium: true,
+    description: 'Black and silver glam party design for New Year countdown',
+    personality: 'Sleek, glam, modern, party night',
+    colors: {
+      primary: '#1A1A1A',
+      secondary: '#C0C0C8',
+      accent: '#E0E0E8',
+      background: '#0A0A0A',
+      text: '#F5F5F8',
+      textMuted: '#8A8A90',
+    },
+    fonts: { display: 'Space Grotesk', body: 'DM Sans', displayVar: '--font-space-grotesk', bodyVar: '--font-dm-sans' },
+    previewTags: ['new year', 'glam', 'silver'],
+    colorSchemes: [
+      { id: 1, label: 'Silver',    bg: '#0A0A0A', surface: '#1A1A1A', primary: '#C0C0C8', secondary: '#E0E0E8', text: '#F5F5F8', muted: '#8A8A90' },
+      { id: 2, label: 'Emerald',   bg: '#020A06', surface: '#081A0E', primary: '#00C878', secondary: '#80E8B8', text: '#E0F8EC', muted: '#6A9A7A' },
+      { id: 3, label: 'Burgundy',  bg: '#0A0204', surface: '#1A060C', primary: '#C83A5A', secondary: '#F0A0B8', text: '#F8E0E8', muted: '#9A6070' },
     ],
   },
 

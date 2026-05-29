@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import {
-  Heart, Cake, Gem, Moon, Briefcase, Sparkles, Star,
+  Heart, Cake, Gem, Flame, Briefcase, Sparkles, Star,
   Lock, Check, Eye, ArrowRight,
 } from 'lucide-react'
 import { TEMPLATES, EventType, Template, DawatEvent } from '@/lib/dummy-data'
@@ -64,10 +64,10 @@ const SECTION_DEFS: {
     filter: (t) => t.category === 'corporate',
   },
   {
-    label: 'Eid',
-    types: ['eid'] as const,
-    icon: Moon,
-    filter: (t) => t.category === 'eid',
+    label: 'Festive',
+    types: ['festive'] as const,
+    icon: Flame,
+    filter: (t) => t.category === 'festive',
   },
   {
     label: 'Other',
@@ -77,7 +77,7 @@ const SECTION_DEFS: {
   },
   {
     label: 'All Templates',
-    types: ['other', 'wedding', 'birthday', 'eid', 'corporate', 'engagement'] as const,
+    types: ['other', 'wedding', 'birthday', 'festive', 'corporate', 'engagement'] as const,
     icon: Sparkles,
     filter: () => true,
   },

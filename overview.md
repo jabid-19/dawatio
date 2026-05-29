@@ -152,7 +152,7 @@ src/
 │   │   ├── Testimonials.tsx         # 3 testimonial cards with star ratings
 │   │   └── Footer.tsx               # Dark footer, 2-column links, branding
 │   │
-│   └── templates/                   # All 30 invite template components
+│   └── templates/                   # All 36 invite template components
 │       ├── TemplateRenderer.tsx     # Resolves template + color scheme → renders correct component
 │       ├── wedding/
 │       │   ├── BloomTemplate.tsx    # Free — cream/terracotta, countdown, gallery, RSVP
@@ -178,12 +178,18 @@ src/
 │       │   ├── ModernLoveTemplate.tsx  # Premium — terracotta/green, 3 color schemes
 │       │   ├── StoryTemplate.tsx       # Premium — warm brown, 3 color schemes
 │       │   └── CelestialTemplate.tsx   # Premium — periwinkle/blush, 3 color schemes
-│       ├── eid/
-│       │   ├── CrescentTemplate.tsx    # Free — green/gold
-│       │   ├── LanternTemplate.tsx     # Premium — teal/amber, 3 color schemes
-│       │   ├── IftarTableTemplate.tsx  # Premium — terracotta/amber, 3 color schemes
-│       │   ├── GeometricTemplate.tsx   # Premium — green/gold geometric, 3 color schemes
-│       │   └── FestiveNightTemplate.tsx # Premium — gold/crimson, 3 color schemes
+│       ├── festive/
+│       │   ├── CrescentTemplate.tsx      # Free — green/gold (Eid)
+│       │   ├── LanternTemplate.tsx       # Premium — teal/amber, 3 color schemes (Eid)
+│       │   ├── IftarTableTemplate.tsx    # Premium — terracotta/amber, 3 color schemes (Eid)
+│       │   ├── GeometricTemplate.tsx     # Premium — green/gold geometric, 3 color schemes (Eid)
+│       │   ├── FestiveNightTemplate.tsx  # Premium — gold/crimson, 3 color schemes (Eid)
+│       │   ├── DiyasTemplate.tsx         # Premium — saffron/vermillion, 3 color schemes (Puja)
+│       │   ├── FloralMandapTemplate.tsx  # Premium — marigold/crimson, 3 color schemes (Puja)
+│       │   ├── GoldenPrayerTemplate.tsx  # Premium — maroon/gold, 3 color schemes (Puja)
+│       │   ├── MidnightGalaTemplate.tsx  # Premium — black/champagne, 3 color schemes (NYE)
+│       │   ├── FireworksNightTemplate.tsx # Premium — dark navy/gold, 3 color schemes (NYE)
+│       │   └── MidnightGlamTemplate.tsx  # Premium — black/silver, 3 color schemes (NYE)
 │       ├── other/
 │       │   ├── SimpleTemplate.tsx      # Free — clean black/white
 │       │   ├── ReunionTemplate.tsx     # Premium — warm brown/gold, 3 color schemes
@@ -308,7 +314,7 @@ interface TemplateProps {
 
 **DUMMY_RSVPS** — 15 sample RSVPs for `evt_01`
 
-**TEMPLATES** — 30 templates across 6 categories:
+**TEMPLATES** — 36 templates across 6 categories:
 
 | Category | Free | Premium |
 |---|---|---|
@@ -316,7 +322,7 @@ interface TemplateProps {
 | Birthday | Confetti | Neon, Pastel Dream, Bold & Loud, Elegant Age |
 | Corporate | Clean Desk | Summit, Boardroom, Launch, Gala Night |
 | Engagement | First Yes | Golden Ring, Modern Love, Story, Celestial |
-| Eid | Crescent | Lantern, Iftar Table, Geometric, Festive Night |
+| Festive | Crescent | Lantern, Iftar Table, Geometric, Festive Night, Diyas, Floral Mandap, Golden Prayer, Midnight Gala, Fireworks Night, Midnight Glam |
 | Other | Simple | Reunion, Graduation, Housewarming, Anniversary |
 
 **Plan Tiers:**
@@ -392,9 +398,9 @@ interface TemplateProps {
 - [x] Hijri date support — tabular algorithm, shown alongside Gregorian in ceremony cards and date picker
 - [x] Color scheme selector — 3 curated schemes per premium template; sticky picker bar in Step 1; scheme dots on card; resets on template change
 
-### Phase 5 — Templates (30 total)
-- [x] All 30 template components across 6 categories (wedding/birthday/corporate/engagement/eid/other)
-- [x] 24 premium templates support 3 color schemes each via `colors?: ColorScheme` prop
+### Phase 5 — Templates (36 total)
+- [x] All 36 template components across 6 categories (wedding/birthday/corporate/engagement/festive/other)
+- [x] 30 premium templates support 3 color schemes each via `colors?: ColorScheme` prop
 - [x] 6 free templates render with hardcoded colors (no scheme picker shown)
 - [x] `TemplateRenderer` resolves active scheme from event and passes to template
 - [x] `TemplatePreviewSheet` — shared bottom-sheet component used by create flow, `/templates`, and home page; scheme swatches + labels in header; mobile/desktop view toggle; footer with select/cancel only in create flow
@@ -445,3 +451,4 @@ interface TemplateProps {
 - **`cn()` utility:** Always use for conditional Tailwind classes to avoid conflicts
 - **SSR safety:** Any code touching `localStorage` must check `typeof window !== 'undefined'`
 - **Color schemes:** Free templates have `colorSchemes: []` in TEMPLATE_CONFIGS — no picker is shown. Premium templates have 3 schemes; `DawatEvent.colorScheme` is 1-indexed (1/2/3), converted to 0-indexed array access in `TemplateRenderer`
+- **Category rename:** `'eid'` → `'festive'` everywhere (types, data, UI). Festive covers Eid, Puja, NYE, and future festive occasions. Template folder is `src/components/templates/festive/`

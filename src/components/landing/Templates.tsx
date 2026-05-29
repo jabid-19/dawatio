@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { Lock, Eye, Sparkles, Heart, Cake, Star, Gem, Briefcase, Moon } from 'lucide-react'
+import { Lock, Eye, Sparkles, Heart, Cake, Star, Gem, Briefcase, Flame } from 'lucide-react'
 import { TEMPLATES, Template, DawatEvent } from '@/lib/dummy-data'
 import { easeOut } from '@/lib/motion'
 import { TemplateRenderer, getPreviewEvent } from '@/lib/template-utils'
 import { TemplatePreviewSheet } from '@/components/create/TemplatePreviewSheet'
 
-type Filter = 'all' | 'wedding' | 'birthday' | 'engagement' | 'corporate' | 'eid' | 'other'
+type Filter = 'all' | 'wedding' | 'birthday' | 'engagement' | 'corporate' | 'festive' | 'other'
 type PreviewState = { template: Template; event: DawatEvent } | null
 
 const FILTERS: { label: string; value: Filter; icon: React.ElementType }[] = [
@@ -17,7 +17,7 @@ const FILTERS: { label: string; value: Filter; icon: React.ElementType }[] = [
   { label: 'Birthday',   value: 'birthday',   icon: Cake },
   { label: 'Engagement', value: 'engagement', icon: Gem },
   { label: 'Corporate',  value: 'corporate',  icon: Briefcase },
-  { label: 'Eid',        value: 'eid',        icon: Moon },
+  { label: 'Festive',    value: 'festive',    icon: Flame },
   { label: 'Other',      value: 'other',      icon: Star },
 ]
 

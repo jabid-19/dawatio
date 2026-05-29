@@ -7,7 +7,7 @@ export const DUMMY_USER = {
 
 export type EventPlan = 'free' | 'basic' | 'wedding' | 'premium'
 export type EventStatus = 'published' | 'draft'
-export type EventType = 'wedding' | 'birthday' | 'engagement' | 'eid' | 'corporate' | 'other'
+export type EventType = 'wedding' | 'birthday' | 'engagement' | 'festive' | 'corporate' | 'other'
 
 export interface SubEvent {
   id: string
@@ -138,7 +138,7 @@ export const DUMMY_RSVPS: RSVP[] = [
 export interface Template {
   id: string
   name: string
-  category: 'wedding' | 'birthday' | 'corporate' | 'engagement' | 'eid' | 'other' | 'all'
+  category: 'wedding' | 'birthday' | 'corporate' | 'engagement' | 'festive' | 'other' | 'all'
   isPremium: boolean
   primaryColor: string
   accentColor: string
@@ -170,12 +170,18 @@ export const TEMPLATES: Template[] = [
   { id: 'modern-love',  name: 'Modern Love',   category: 'engagement', isPremium: true,  primaryColor: '#C9622F', accentColor: '#3D6B4F', defaultCover: null },
   { id: 'story',        name: 'Story',         category: 'engagement', isPremium: true,  primaryColor: '#7B5C3A', accentColor: '#C9A875', defaultCover: null },
   { id: 'celestial',    name: 'Celestial',     category: 'engagement', isPremium: true,  primaryColor: '#C0C8E8', accentColor: '#E8A0B0', defaultCover: null },
-  // Eid
-  { id: 'crescent',     name: 'Crescent',      category: 'eid',        isPremium: false, primaryColor: '#2D7A4F', accentColor: '#C9A84C', defaultCover: null },
-  { id: 'lantern',      name: 'Lantern',       category: 'eid',        isPremium: true,  primaryColor: '#1B6B6B', accentColor: '#E8A030', defaultCover: null },
-  { id: 'iftar-table',  name: 'Iftar Table',   category: 'eid',        isPremium: true,  primaryColor: '#D4622F', accentColor: '#E8A030', defaultCover: null },
-  { id: 'geometric',    name: 'Geometric',     category: 'eid',        isPremium: true,  primaryColor: '#2D7A4F', accentColor: '#C9A84C', defaultCover: null },
-  { id: 'festive-night',name: 'Festive Night', category: 'eid',        isPremium: true,  primaryColor: '#C9A84C', accentColor: '#8B1A2B', defaultCover: null },
+  // Festive
+  { id: 'crescent',       name: 'Crescent',        category: 'festive', isPremium: false, primaryColor: '#2D7A4F', accentColor: '#C9A84C', defaultCover: null },
+  { id: 'lantern',        name: 'Lantern',         category: 'festive', isPremium: true,  primaryColor: '#1B6B6B', accentColor: '#E8A030', defaultCover: null },
+  { id: 'iftar-table',   name: 'Iftar Table',     category: 'festive', isPremium: true,  primaryColor: '#D4622F', accentColor: '#E8A030', defaultCover: null },
+  { id: 'geometric',     name: 'Geometric',       category: 'festive', isPremium: true,  primaryColor: '#2D7A4F', accentColor: '#C9A84C', defaultCover: null },
+  { id: 'festive-night', name: 'Festive Night',   category: 'festive', isPremium: true,  primaryColor: '#C9A84C', accentColor: '#8B1A2B', defaultCover: null },
+  { id: 'puja-diyas',    name: 'Diyas',           category: 'festive', isPremium: true,  primaryColor: '#D4622F', accentColor: '#E8A030', defaultCover: null },
+  { id: 'puja-mandap',   name: 'Floral Mandap',   category: 'festive', isPremium: true,  primaryColor: '#C9622F', accentColor: '#D4A853', defaultCover: null },
+  { id: 'puja-gold',     name: 'Golden Prayer',   category: 'festive', isPremium: true,  primaryColor: '#8B1A2B', accentColor: '#D4A853', defaultCover: null },
+  { id: 'nye-gala',      name: 'Midnight Gala',   category: 'festive', isPremium: true,  primaryColor: '#D4A853', accentColor: '#F2E6C9', defaultCover: null },
+  { id: 'nye-fireworks', name: 'Fireworks Night', category: 'festive', isPremium: true,  primaryColor: '#1E3A8A', accentColor: '#D4A853', defaultCover: null },
+  { id: 'nye-glam',      name: 'Midnight Glam',   category: 'festive', isPremium: true,  primaryColor: '#1A1A1A', accentColor: '#C0C0C8', defaultCover: null },
   // Other
   { id: 'simple',       name: 'Simple',        category: 'other',      isPremium: false, primaryColor: '#1A1A1A', accentColor: '#C9622F', defaultCover: null },
   { id: 'reunion',      name: 'Reunion',       category: 'other',      isPremium: true,  primaryColor: '#7B5C3A', accentColor: '#D4A853', defaultCover: null },

@@ -12,7 +12,7 @@ const CATEGORY_EVENT_TYPE: Record<Template['category'], DawatEvent['type']> = {
   birthday:   'birthday',
   corporate:  'corporate',
   engagement: 'engagement',
-  eid:        'eid',
+  festive:    'festive',
   other:      'other',
   all:        'other',
 }
@@ -29,7 +29,7 @@ function makeSyntheticEvent(type: DawatEvent['type'], templateId: string): Dawat
     birthday:   "Aryan's 1st Birthday",
     corporate:  'Annual Leadership Summit',
     engagement: 'Laila & Hassan Engagement',
-    eid:        'Eid Al-Fitr Gathering',
+    festive:    'Festive Celebration',
     other:      'Special Celebration',
   }
   return {

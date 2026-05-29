@@ -129,7 +129,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
                     onChange={(e) => updateField('type', e.target.value as DawatEvent['type'])}
                     className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-ink h-11 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
-                    {['wedding', 'birthday', 'engagement', 'eid', 'corporate', 'other'].map((t) => (
+                    {['wedding', 'birthday', 'engagement', 'festive', 'corporate', 'other'].map((t) => (
                       <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>
                     ))}
                   </select>
