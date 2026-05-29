@@ -1,23 +1,23 @@
-# Dawat — Project Overview
+# Dawatio — Project Overview
 
-Dawat is a frontend-only digital invitation platform for creating and sharing beautiful event invitations (weddings, birthdays, etc.). There is no backend — all data is mock/dummy, auth is client-side only, and state persists via `localStorage`.
+Dawatio is a frontend-only digital invitation platform for creating and sharing beautiful event invitations (weddings, birthdays, etc.). There is no backend — all data is mock/dummy, auth is client-side only, and state persists via `localStorage`.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Version |
-|---|---|---|
-| Framework | Next.js (App Router) | 16.2.6 |
-| Language | TypeScript | 5.x |
-| Styling | Tailwind CSS v4 | ^4.3.0 |
-| Animations | Motion (Framer Motion) | 12.40.0 |
-| Icons | lucide-react | 1.16.0 |
-| Toasts | Sonner | 2.0.7 |
-| QR Codes | qrcode.react | 4.2.0 |
-| Confetti | canvas-confetti | 1.9.4 |
-| Class utils | clsx + tailwind-merge | 2.1.1 / 3.6.0 |
-| Runtime | React 19 | 19.2.4 |
+| Layer       | Technology             | Version       |
+| ----------- | ---------------------- | ------------- |
+| Framework   | Next.js (App Router)   | 16.2.6        |
+| Language    | TypeScript             | 5.x           |
+| Styling     | Tailwind CSS v4        | ^4.3.0        |
+| Animations  | Motion (Framer Motion) | 12.40.0       |
+| Icons       | lucide-react           | 1.16.0        |
+| Toasts      | Sonner                 | 2.0.7         |
+| QR Codes    | qrcode.react           | 4.2.0         |
+| Confetti    | canvas-confetti        | 1.9.4         |
+| Class utils | clsx + tailwind-merge  | 2.1.1 / 3.6.0 |
+| Runtime     | React 19               | 19.2.4        |
 
 ---
 
@@ -25,48 +25,49 @@ Dawat is a frontend-only digital invitation platform for creating and sharing be
 
 ### Color Palette (`src/app/globals.css`)
 
-| Token | Hex | Usage |
-|---|---|---|
-| `--color-cream` | `#FAF8F4` | Page background |
-| `--color-surface` | `#FFFFFF` | Cards, panels |
-| `--color-ink` | `#1A1714` | Primary text |
-| `--color-ink-muted` | `#6B6560` | Secondary text |
-| `--color-ink-light` | `#B5B0AA` | Placeholders, disabled |
-| `--color-border` | `#E8E4DF` | Borders, dividers |
-| `--color-accent` | `#C9622F` | Primary CTA — warm terracotta |
-| `--color-accent-hover` | `#B05525` | Accent hover state |
-| `--color-accent-light` | `#F5E8E0` | Accent tint for badges |
-| `--color-gold` | `#D4A853` | Premium / wedding highlights |
-| `--color-success` | `#3D7A5A` | Success states |
-| `--color-danger` | `#C03B3B` | Error states |
+| Token                  | Hex       | Usage                         |
+| ---------------------- | --------- | ----------------------------- |
+| `--color-cream`        | `#FAF8F4` | Page background               |
+| `--color-surface`      | `#FFFFFF` | Cards, panels                 |
+| `--color-ink`          | `#1A1714` | Primary text                  |
+| `--color-ink-muted`    | `#6B6560` | Secondary text                |
+| `--color-ink-light`    | `#B5B0AA` | Placeholders, disabled        |
+| `--color-border`       | `#E8E4DF` | Borders, dividers             |
+| `--color-accent`       | `#C9622F` | Primary CTA — warm terracotta |
+| `--color-accent-hover` | `#B05525` | Accent hover state            |
+| `--color-accent-light` | `#F5E8E0` | Accent tint for badges        |
+| `--color-gold`         | `#D4A853` | Premium / wedding highlights  |
+| `--color-success`      | `#3D7A5A` | Success states                |
+| `--color-danger`       | `#C03B3B` | Error states                  |
 
 ### Typography
 
 Fonts loaded via `next/font/google` and applied as CSS variables:
 
-| Variable | Font | Usage |
-|---|---|---|
+| Variable          | Font             | Usage                                |
+| ----------------- | ---------------- | ------------------------------------ |
 | `--font-playfair` | Playfair Display | Headings, hero text (`font-display`) |
-| `--font-dm-sans` | DM Sans | Body text, UI (`font-body`) |
-| `--font-dm-mono` | DM Mono | Codes, tags (`font-mono`) |
+| `--font-dm-sans`  | DM Sans          | Body text, UI (`font-body`)          |
+| `--font-dm-mono`  | DM Mono          | Codes, tags (`font-mono`)            |
 
 All `h1`–`h6` default to Playfair Display via `globals.css` base layer.
 
 ### Shadows
 
 ```css
---shadow-card:  0 1px 3px rgba(26,23,20,0.06), 0 4px 16px rgba(26,23,20,0.04);
---shadow-float: 0 8px 32px rgba(26,23,20,0.12);
---shadow-modal: 0 24px 64px rgba(26,23,20,0.18);
+--shadow-card:
+  0 1px 3px rgba(26, 23, 20, 0.06), 0 4px 16px rgba(26, 23, 20, 0.04);
+--shadow-float: 0 8px 32px rgba(26, 23, 20, 0.12);
+--shadow-modal: 0 24px 64px rgba(26, 23, 20, 0.18);
 ```
 
 ### Border Radius Conventions
 
-| Element | Class |
-|---|---|
-| Cards | `rounded-2xl` |
-| Buttons | `rounded-full` |
-| Inputs | `rounded-xl` |
+| Element        | Class          |
+| -------------- | -------------- |
+| Cards          | `rounded-2xl`  |
+| Buttons        | `rounded-full` |
+| Inputs         | `rounded-xl`   |
 | Badges / pills | `rounded-full` |
 
 ### Motion Tokens (`src/lib/motion.ts`)
@@ -91,7 +92,7 @@ src/
 ├── app/
 │   ├── layout.tsx                   # Root layout — fonts, AuthProvider, Sonner toaster
 │   ├── globals.css                  # Design tokens, Tailwind theme, base styles
-│   ├── not-found.tsx                # 404 page with Dawat branding
+│   ├── not-found.tsx                # 404 page with Dawatio branding
 │   │
 │   ├── (marketing)/                 # Public routes, no auth
 │   │   ├── layout.tsx               # Passthrough layout
@@ -199,7 +200,7 @@ src/
 │       └── shared/
 │           ├── RSVPForm.tsx            # Shared RSVP form (validation, sub-event checkboxes, success)
 │           ├── CountdownTimer.tsx      # Live countdown used by templates
-│           ├── DawatBranding.tsx       # "Made with Dawat" badge for free plan
+│           ├── DawatBranding.tsx       # "Made with Dawatio" badge for free plan
 │           ├── Gallery.tsx             # Image gallery grid
 │           ├── MapEmbed.tsx            # Venue map embed
 │           ├── ShareBar.tsx            # Share buttons row
@@ -236,48 +237,51 @@ Client-side only. No API calls.
 
 Hybrid localStorage store. Seed data (DUMMY_EVENTS) is always present; user-created events are stored in `localStorage` under key `dawat_events`. Edits to dummy events are stored separately under `dawat_event_updates`.
 
-| Function | Purpose |
-|---|---|
-| `getAllEvents()` | Merges DUMMY_EVENTS + localStorage events |
-| `getEventById(id)` | Lookup by id |
-| `getEventBySlug(slug)` | Lookup by URL slug (for public invite page) |
-| `getEventForEdit(id)` | Returns edited version of an event if edits exist |
-| `saveEvent(event)` | Updates existing event (handles dummy vs. user events separately) |
-| `addNewEvent(event)` | Appends new event to localStorage |
-| `saveDraft(data)` | Saves create-form draft to `dawat_draft_create` key |
-| `loadDraft<T>()` | Loads draft; returns null if missing or parse fails |
-| `clearDraft()` | Removes draft key |
+| Function               | Purpose                                                           |
+| ---------------------- | ----------------------------------------------------------------- |
+| `getAllEvents()`       | Merges DUMMY_EVENTS + localStorage events                         |
+| `getEventById(id)`     | Lookup by id                                                      |
+| `getEventBySlug(slug)` | Lookup by URL slug (for public invite page)                       |
+| `getEventForEdit(id)`  | Returns edited version of an event if edits exist                 |
+| `saveEvent(event)`     | Updates existing event (handles dummy vs. user events separately) |
+| `addNewEvent(event)`   | Appends new event to localStorage                                 |
+| `saveDraft(data)`      | Saves create-form draft to `dawat_draft_create` key               |
+| `loadDraft<T>()`       | Loads draft; returns null if missing or parse fails               |
+| `clearDraft()`         | Removes draft key                                                 |
 
 SSR-safe — all functions check `typeof window` before accessing `localStorage`.
 
 ### Template Config (`src/lib/templates-data.ts`)
 
 `TEMPLATE_CONFIGS` — one entry per template. Each config has:
+
 - `id` — matches `DawatEvent.template`
 - `name` — display name
 - `colorSchemes: ColorScheme[]` — 3 schemes for premium templates, `[]` for free
 
 **`ColorScheme` interface:**
+
 ```ts
 interface ColorScheme {
-  id: number      // 1 | 2 | 3
-  label: string   // e.g. "Classic", "Warm", "Midnight"
-  bg: string      // main background
-  surface: string // card / secondary section bg
-  primary: string // main accent (buttons, headings)
-  secondary: string
-  text: string    // body text
-  muted: string   // captions / secondary text
+  id: number; // 1 | 2 | 3
+  label: string; // e.g. "Classic", "Warm", "Midnight"
+  bg: string; // main background
+  surface: string; // card / secondary section bg
+  primary: string; // main accent (buttons, headings)
+  secondary: string;
+  text: string; // body text
+  muted: string; // captions / secondary text
 }
 ```
 
 **`TemplateProps` interface** (passed to every template component):
+
 ```ts
 interface TemplateProps {
-  event: DawatEvent
-  branding?: boolean
-  onRsvpSubmit?: (data: RSVPData) => void
-  colors?: ColorScheme  // resolved active scheme; undefined = use template defaults
+  event: DawatEvent;
+  branding?: boolean;
+  onRsvpSubmit?: (data: RSVPData) => void;
+  colors?: ColorScheme; // resolved active scheme; undefined = use template defaults
 }
 ```
 
@@ -293,15 +297,18 @@ interface TemplateProps {
 ### Dummy Data (`src/lib/dummy-data.ts`)
 
 **DUMMY_USER**
+
 ```ts
 { email: 'demo@dawat.app', password: 'demo1234', name: 'Jabid Rahman', avatar: null }
 ```
 
 **DUMMY_EVENTS** — 2 seed events:
+
 - `evt_01` — "Nadia & Rafiq Wedding" (wedding, published, wedding plan, 3 sub-events, 87/150 RSVPs)
 - `evt_02` — "Aryan's 1st Birthday" (birthday, draft, free plan, 1 sub-event, 12/40 RSVPs)
 
 **`DawatEvent` key fields:**
+
 ```ts
 {
   template: string       // template id
@@ -316,23 +323,23 @@ interface TemplateProps {
 
 **TEMPLATES** — 36 templates across 6 categories:
 
-| Category | Free | Premium |
-|---|---|---|
-| Wedding | Bloom | Midnight, Minimaa, Garden, Royal |
-| Birthday | Confetti | Neon, Pastel Dream, Bold & Loud, Elegant Age |
-| Corporate | Clean Desk | Summit, Boardroom, Launch, Gala Night |
-| Engagement | First Yes | Golden Ring, Modern Love, Story, Celestial |
-| Festive | Crescent | Lantern, Iftar Table, Geometric, Festive Night, Diyas, Floral Mandap, Golden Prayer, Midnight Gala, Fireworks Night, Midnight Glam |
-| Other | Simple | Reunion, Graduation, Housewarming, Anniversary |
+| Category   | Free       | Premium                                                                                                                            |
+| ---------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Wedding    | Bloom      | Midnight, Minimaa, Garden, Royal                                                                                                   |
+| Birthday   | Confetti   | Neon, Pastel Dream, Bold & Loud, Elegant Age                                                                                       |
+| Corporate  | Clean Desk | Summit, Boardroom, Launch, Gala Night                                                                                              |
+| Engagement | First Yes  | Golden Ring, Modern Love, Story, Celestial                                                                                         |
+| Festive    | Crescent   | Lantern, Iftar Table, Geometric, Festive Night, Diyas, Floral Mandap, Golden Prayer, Midnight Gala, Fireworks Night, Midnight Glam |
+| Other      | Simple     | Reunion, Graduation, Housewarming, Anniversary                                                                                     |
 
 **Plan Tiers:**
 
-| Plan | Price |
-|---|---|
-| free | ৳0 |
-| basic | ৳299 |
-| wedding | ৳599 |
-| premium | ৳999 |
+| Plan    | Price |
+| ------- | ----- |
+| free    | ৳0    |
+| basic   | ৳299  |
+| wedding | ৳599  |
+| premium | ৳999  |
 
 `planSatisfies(currentPlan, requiredPlan)` — returns `true` if current plan meets or exceeds required plan tier.
 
@@ -340,26 +347,27 @@ interface TemplateProps {
 
 ## Pages & Routes
 
-| Route | Auth | Component | Description |
-|---|---|---|---|
-| `/` | No | `(marketing)/page.tsx` | Landing page |
-| `/templates` | No | `(marketing)/templates/page.tsx` | Full template gallery |
-| `/login` | No | `(auth)/login/page.tsx` | Login form |
-| `/register` | No | `(auth)/register/page.tsx` | Register form |
-| `/dashboard` | Yes | `dashboard/page.tsx` | Event list |
-| `/dashboard/create` | Yes | `dashboard/create/page.tsx` | 2-step create flow |
-| `/dashboard/account` | Yes | `dashboard/account/page.tsx` | Profile + logout |
-| `/dashboard/events/[id]` | Yes | `dashboard/events/[id]/page.tsx` | Event overview |
-| `/dashboard/events/[id]/edit` | Yes | `dashboard/events/[id]/edit/page.tsx` | Edit event (6 tabs) |
-| `/dashboard/events/[id]/guests` | Yes | `dashboard/events/[id]/guests/page.tsx` | RSVP management |
-| `/dashboard/events/[id]/share` | Yes | `dashboard/events/[id]/share/page.tsx` | Share tools |
-| `/i/[slug]` | No | `i/[slug]/page.tsx` | Public invite page |
+| Route                           | Auth | Component                               | Description           |
+| ------------------------------- | ---- | --------------------------------------- | --------------------- |
+| `/`                             | No   | `(marketing)/page.tsx`                  | Landing page          |
+| `/templates`                    | No   | `(marketing)/templates/page.tsx`        | Full template gallery |
+| `/login`                        | No   | `(auth)/login/page.tsx`                 | Login form            |
+| `/register`                     | No   | `(auth)/register/page.tsx`              | Register form         |
+| `/dashboard`                    | Yes  | `dashboard/page.tsx`                    | Event list            |
+| `/dashboard/create`             | Yes  | `dashboard/create/page.tsx`             | 2-step create flow    |
+| `/dashboard/account`            | Yes  | `dashboard/account/page.tsx`            | Profile + logout      |
+| `/dashboard/events/[id]`        | Yes  | `dashboard/events/[id]/page.tsx`        | Event overview        |
+| `/dashboard/events/[id]/edit`   | Yes  | `dashboard/events/[id]/edit/page.tsx`   | Edit event (6 tabs)   |
+| `/dashboard/events/[id]/guests` | Yes  | `dashboard/events/[id]/guests/page.tsx` | RSVP management       |
+| `/dashboard/events/[id]/share`  | Yes  | `dashboard/events/[id]/share/page.tsx`  | Share tools           |
+| `/i/[slug]`                     | No   | `i/[slug]/page.tsx`                     | Public invite page    |
 
 ---
 
 ## Feature Implementation Status
 
 ### Phase 1 — Foundation & Landing Page
+
 - [x] Next.js + TypeScript + Tailwind v4 + App Router
 - [x] Motion installed and configured
 - [x] Playfair Display + DM Sans + DM Mono via `next/font`
@@ -374,6 +382,7 @@ interface TemplateProps {
 - [x] Footer (dark, links, branding)
 
 ### Phase 2 — Auth
+
 - [x] Login page (dummy auth, error state, redirect)
 - [x] Register page (validation, success animation, redirect)
 - [x] Auth guard via `useRequireAuth` in dashboard layout
@@ -381,6 +390,7 @@ interface TemplateProps {
 - [x] Split-screen auth layout (branding left, form right)
 
 ### Phase 3 — Dashboard
+
 - [x] Dashboard layout with Sidebar (desktop + mobile bottom nav)
 - [x] Events list (`/dashboard`) with EventCard, skeleton loaders, empty state
 - [x] Event detail page (`/dashboard/events/[id]`) — stats, sub-events, quick links
@@ -390,6 +400,7 @@ interface TemplateProps {
 - [x] Account page — profile display, logout
 
 ### Phase 4 — Create Event Flow
+
 - [x] Step 1: Template gallery — horizontal carousels per occasion (Weddings/Birthdays/Eid…)
 - [x] Step 2: Details + live preview — title, cover upload, custom date picker (Hijri secondary), ceremonies, description
 - [x] Live preview — desktop: sticky side-by-side pane; mobile: sticky mini-preview bar → fullscreen sheet
@@ -399,21 +410,24 @@ interface TemplateProps {
 - [x] Color scheme selector — 3 curated schemes per premium template; sticky picker bar in Step 1; scheme dots on card; resets on template change
 
 ### Phase 5 — Templates (36 total)
+
 - [x] All 36 template components across 6 categories (wedding/birthday/corporate/engagement/festive/other)
 - [x] 30 premium templates support 3 color schemes each via `colors?: ColorScheme` prop
 - [x] 6 free templates render with hardcoded colors (no scheme picker shown)
 - [x] `TemplateRenderer` resolves active scheme from event and passes to template
 - [x] `TemplatePreviewSheet` — shared bottom-sheet component used by create flow, `/templates`, and home page; scheme swatches + labels in header; mobile/desktop view toggle; footer with select/cancel only in create flow
 - [x] RSVPForm (shared — validation, sub-event checkboxes, success state)
-- [x] "Made with Dawat" branding on free plan invites
+- [x] "Made with Dawatio" branding on free plan invites
 
 ### Phase 6 — Plan Gates & Upgrade
+
 - [x] `PlanGate` component (blur overlay, lock icon, upgrade modal)
 - [x] Upgrade modal (plan info, price, CTA with "coming soon" toast)
 - [x] `planSatisfies()` utility for plan comparison
 - [ ] Actual payment integration (intentionally out of scope)
 
 ### Phase 7 — Polish & Micro-interactions
+
 - [x] Page-level entrance animations (Motion fadeUp/stagger)
 - [x] Button hover/tap scale animations
 - [x] Card hover lift effect (EventCard)
@@ -429,14 +443,14 @@ interface TemplateProps {
 
 ## Known Gaps / Not Implemented
 
-| Item | Notes |
-|---|---|
-| Real image upload | Cover photo tab shows placeholder UI only |
-| Payment / upgrade | CTA shows "coming soon" toast |
-| Export guests | Button shows "coming soon" toast |
-| Send reminder | Button shows "coming soon" toast |
-| Custom domain | Settings tab shows field, no functionality |
-| Page route transitions | AnimatePresence not wired at layout level |
+| Item                   | Notes                                      |
+| ---------------------- | ------------------------------------------ |
+| Real image upload      | Cover photo tab shows placeholder UI only  |
+| Payment / upgrade      | CTA shows "coming soon" toast              |
+| Export guests          | Button shows "coming soon" toast           |
+| Send reminder          | Button shows "coming soon" toast           |
+| Custom domain          | Settings tab shows field, no functionality |
+| Page route transitions | AnimatePresence not wired at layout level  |
 
 ---
 

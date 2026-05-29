@@ -8,7 +8,7 @@ const TESTIMONIALS = [
   {
     name: 'Tasnim Hossain',
     role: 'Bride, Dhaka',
-    quote: "Dawat made our wedding invitations so beautiful! Everyone kept asking how we made such a gorgeous invite. Our guests loved being able to RSVP directly.",
+    quote: "Dawatio made our wedding invitations so beautiful! Everyone kept asking how we made such a gorgeous invite. Our guests loved being able to RSVP directly.",
     rating: 5,
   },
   {
@@ -20,7 +20,7 @@ const TESTIMONIALS = [
   {
     name: 'Sumaiya Karim',
     role: 'Mom, Sylhet',
-    quote: "Used Dawat for my son's birthday party. Created the invite in under 10 minutes. The confetti template was a hit with all the kids!",
+    quote: "Used Dawatio for my son's birthday party. Created the invite in under 10 minutes. The confetti template was a hit with all the kids!",
     rating: 5,
   },
 ]

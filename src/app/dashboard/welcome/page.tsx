@@ -69,7 +69,7 @@ export default function WelcomePage() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.4 }}
         >
-          Dawat lets you create beautiful digital invitation websites for any celebration — in minutes.
+          Dawatio lets you create beautiful digital invitation websites for any celebration — in minutes.
         </motion.p>
 
         {/* Steps */}

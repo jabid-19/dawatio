@@ -21,7 +21,7 @@ export default function DawatBranding({ show, colors = {} }: DawatBrandingProps)
         className="inline-flex items-center gap-1.5 text-xs font-medium opacity-50 hover:opacity-80 transition-opacity"
         style={{ color: colors.text }}
       >
-        Made with Dawat
+        Made with Dawatio
       </a>
     </div>
   )

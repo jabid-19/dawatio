@@ -38,7 +38,7 @@ export default function Sidebar() {
       <aside className="hidden md:flex flex-col fixed left-0 top-0 h-full w-60 bg-surface border-r border-border z-30">
         <div className="p-6 border-b border-border">
           <Link href="/" className="inline-flex items-center justify-center bg-accent rounded-xl px-4 py-2">
-            <Image src="/logo.png" alt="Dawat" width={90} height={30} style={{ objectFit: 'contain' }} />
+            <Image src="/logo.png" alt="Dawatio" width={90} height={30} style={{ objectFit: 'contain' }} />
           </Link>
         </div>
 
@@ -88,7 +88,7 @@ export default function Sidebar() {
       {/* Mobile top bar */}
       <header className="md:hidden fixed top-0 left-0 right-0 bg-surface border-b border-border z-30 px-4 h-14 flex items-center justify-between">
         <Link href="/" className="inline-flex items-center justify-center bg-accent rounded-lg px-3 py-1.5">
-          <Image src="/logo.png" alt="Dawat" width={70} height={24} style={{ objectFit: 'contain' }} />
+          <Image src="/logo.png" alt="Dawatio" width={70} height={24} style={{ objectFit: 'contain' }} />
         </Link>
         {user && <UserAvatar name={user.name} />}
       </header>

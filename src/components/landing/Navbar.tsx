@@ -59,7 +59,7 @@ export default function Navbar() {
             className="flex items-center justify-center bg-accent overflow-hidden"
             style={{ width: 36, height: 36, borderRadius: '9999px' }}
           >
-            <img src="/logo.png" alt="Dawat" style={{ width: '65%', height: '65%', objectFit: 'contain' }} />
+            <img src="/logo.png" alt="Dawatio" style={{ width: '65%', height: '65%', objectFit: 'contain' }} />
           </div>
         </Link>
 
@@ -102,7 +102,7 @@ export default function Navbar() {
             >
               <img
                 src="/logo.png"
-                alt="Dawat"
+                alt="Dawatio"
                 style={{ width: '65%', height: '65%', objectFit: 'contain' }}
               />
             </motion.div>

@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <Image
               src="/logo.png"
-              alt="Dawat"
+              alt="Dawatio"
               width={120}
               height={40}
               className="mb-3"
@@ -48,10 +48,10 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/10 flex items-center justify-between gap-4 flex-wrap">
           <p className="text-xs text-ink-light/60">
-            &copy; 2025 Dawat. Made with love in Bangladesh.
+            &copy; 2025 Dawatio. Made with love in Bangladesh.
           </p>
           <p className="text-xs text-ink-light/40">
-            Made with Dawat ✦
+            Made with Dawatio ✦
           </p>
         </div>
       </div>
