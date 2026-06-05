@@ -18,8 +18,8 @@ export default function Navbar() {
 
   const spring = { stiffness: 180, damping: 28, mass: 0.6 }
 
-  const rawLogoTop  = useTransform(scrollY, [0, 90], [-14,  6])
-  const rawLogoSize = useTransform(scrollY, [0, 90], [ 68, 40])
+  const rawLogoTop  = useTransform(scrollY, [0, 90], [-20,  6])
+  const rawLogoSize = useTransform(scrollY, [0, 90], [ 95, 40])
   const rawMaxWidth = useTransform(scrollY, [0, 90], [780, 660])
   const rawGap      = useTransform(scrollY, [0, 90], [ 28, 18])
   const rawBgAlpha  = useTransform(scrollY, [0, 90], [0.72, 0.96])
@@ -32,7 +32,7 @@ export default function Navbar() {
   const background = useMotionTemplate`rgba(250,248,244,${bgAlpha})`
 
   return (
-    <div className="fixed top-5 inset-x-0 z-50 flex flex-col items-center px-4 pointer-events-none">
+    <div className="fixed top-10 inset-x-0 z-50 flex flex-col items-center px-4 pointer-events-none">
 
       {/* ── Pill ── */}
       <motion.nav
@@ -65,26 +65,41 @@ export default function Navbar() {
 
         {/* Desktop: left links */}
         <motion.div className="hidden sm:flex items-center flex-1" style={{ gap }}>
-          {NAV_LINKS.map(({ label, href }, i) => (
-            <motion.div
-              key={href}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.15 + i * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              <Link
-                href={href}
-                className="text-sm font-medium cursor-pointer whitespace-nowrap"
-                style={{ color: pathname === href ? '#1A1714' : '#6B6560', transition: 'color 0.15s ease' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#1A1714' }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.color = pathname === href ? '#1A1714' : '#6B6560'
-                }}
+          {NAV_LINKS.map(({ label, href }, i) => {
+            const isActive = pathname === href
+            return (
+              <motion.div
+                key={href}
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.15 + i * 0.08, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                {label}
-              </Link>
-            </motion.div>
-          ))}
+                <Link
+                  href={href}
+                  className="relative flex items-center text-sm font-medium cursor-pointer whitespace-nowrap px-3 py-1.5 rounded-full group"
+                  style={{ color: isActive ? '#1A1714' : '#6B6560', transition: 'color 0.15s ease' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#1A1714' }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.color = isActive ? '#1A1714' : '#6B6560'
+                  }}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavPill"
+                      className="absolute inset-0 rounded-full"
+                      style={{ background: 'rgba(201,98,47,0.10)', border: '1px solid rgba(201,98,47,0.18)' }}
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <motion.span
+                    className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"
+                    style={{ background: 'rgba(26,23,20,0.055)', transition: 'opacity 0.15s ease' }}
+                  />
+                  <span className="relative">{label}</span>
+                </Link>
+              </motion.div>
+            )
+          })}
         </motion.div>
 
         {/* Center logo — morphs on scroll */}
@@ -103,7 +118,7 @@ export default function Navbar() {
               <img
                 src="/logo.png"
                 alt="Dawatio"
-                style={{ width: '65%', height: '65%', objectFit: 'contain' }}
+                style={{ width: '95%', height: '95%', objectFit: 'contain' }}
               />
             </motion.div>
           </Link>
@@ -119,12 +134,24 @@ export default function Navbar() {
           >
             <Link
               href="/login"
-              className="text-sm font-medium cursor-pointer whitespace-nowrap"
-              style={{ color: '#6B6560', transition: 'color 0.15s ease' }}
+              className="relative flex items-center text-sm font-medium cursor-pointer whitespace-nowrap px-3 py-1.5 rounded-full group"
+              style={{ color: pathname === '/login' ? '#1A1714' : '#6B6560', transition: 'color 0.15s ease' }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#1A1714' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#6B6560' }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = pathname === '/login' ? '#1A1714' : '#6B6560' }}
             >
-              Login
+              {pathname === '/login' && (
+                <motion.span
+                  layoutId="activeNavPill"
+                  className="absolute inset-0 rounded-full"
+                  style={{ background: 'rgba(201,98,47,0.10)', border: '1px solid rgba(201,98,47,0.18)' }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+              <motion.span
+                className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"
+                style={{ background: 'rgba(26,23,20,0.055)', transition: 'opacity 0.15s ease' }}
+              />
+              <span className="relative">Login</span>
             </Link>
           </motion.div>
 
@@ -217,7 +244,7 @@ export default function Navbar() {
                     href={href}
                     onClick={() => setMenuOpen(false)}
                     className="block px-5 py-3 text-sm font-medium"
-                    style={{ color: pathname === href ? '#C9622F' : '#1A1714' }}
+                    style={{ color: pathname === href ? '#C9622F' : '#1A1714', fontWeight: pathname === href ? 600 : 500 }}
                   >
                     {label}
                   </Link>
