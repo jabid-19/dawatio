@@ -3,6 +3,7 @@
 import type { DawatEvent } from '@/lib/dummy-data'
 import type { TemplateProps, RSVPFormData } from '@/lib/templates-data'
 import { TEMPLATE_CONFIGS } from '@/lib/templates-data'
+import { resolveContent } from '@/lib/template-content'
 
 // ─── Wedding ──────────────────────────────────────────────────────────────────
 import BloomTemplate from './wedding/BloomTemplate'
@@ -54,13 +55,8 @@ import AnniversaryTemplate from './other/AnniversaryTemplate'
 
 // ─── Adapter: DawatEvent → TemplateProps.event ────────────────────────────────
 function toTemplateEvent(event: DawatEvent): TemplateProps['event'] {
-  const tc = event.templateContent ?? {}
-  const gallery = tc.galleryImages ?? [
-    `https://picsum.photos/seed/${event.id}1/600/400`,
-    `https://picsum.photos/seed/${event.id}2/600/400`,
-    `https://picsum.photos/seed/${event.id}3/600/400`,
-    `https://picsum.photos/seed/${event.id}4/600/400`,
-  ]
+  const resolved = resolveContent(event)
+  const gallery = resolved.galleryImages
 
   return {
     title: event.title,
@@ -70,13 +66,16 @@ function toTemplateEvent(event: DawatEvent): TemplateProps['event'] {
     eventDate: event.eventDate,
     subEvents: event.subEvents,
     gallery,
-    coupleNames: event.type === 'wedding' || event.type === 'engagement'
-      ? { partner1: event.title.split('&')[0]?.trim() ?? 'Partner 1', partner2: event.title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2' }
-      : undefined,
-    personName: event.type === 'birthday' ? event.title.split("'s")[0] ?? event.title : undefined,
-    companyName: event.type === 'corporate' ? event.title : undefined,
-    hostName: event.title,
-    message: tc.aboutHeading ?? undefined,
+    coupleNames: event.coupleNames ?? (
+      event.type === 'wedding' || event.type === 'engagement'
+        ? { partner1: event.title.split('&')[0]?.trim() ?? 'Partner 1', partner2: event.title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2' }
+        : undefined
+    ),
+    personName: event.personName ?? (event.type === 'birthday' ? event.title.split("'s")[0] ?? event.title : undefined),
+    companyName: event.companyName ?? (event.type === 'corporate' ? event.title : undefined),
+    hostName: event.hostName ?? event.title,
+    message: event.message ?? (resolved.aboutHeading || undefined),
+    sections: resolved.sections,
   }
 }
 
@@ -94,7 +93,7 @@ export default function TemplateRenderer({ event, disableEffects }: TemplateRend
   const schemeIdx = (event.colorScheme ?? 1) - 1
   const resolvedColors = config?.colorSchemes?.[schemeIdx]
 
-  const props: TemplateProps = { event: templateEvent, branding, onRsvpSubmit, colors: resolvedColors }
+  const props: TemplateProps = { event: templateEvent, branding, onRsvpSubmit, colors: resolvedColors, disableEffects }
 
   switch (event.template) {
     // Wedding

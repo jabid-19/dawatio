@@ -6,9 +6,11 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
 
 const fontDisplay = { fontFamily: 'var(--font-eb-garamond, "EB Garamond", serif)' }
 const fontBody = { fontFamily: 'var(--font-poppins, "Poppins", sans-serif)' }
@@ -33,7 +35,7 @@ function OrnamentalDivider({ gold }: { gold: string }) {
 
 function OrnateFrame({ children, gold }: { children: React.ReactNode; gold: string }) {
   return (
-    <div className="relative p-8 sm:p-12">
+    <div className="relative p-4 @sm:p-8 @md:p-12">
       {['top-0 left-0', 'top-0 right-0 rotate-90', 'bottom-0 right-0 rotate-180', 'bottom-0 left-0 -rotate-90'].map((pos, i) => (
         <svg key={i} viewBox="0 0 40 40" className={`absolute w-10 h-10 ${pos}`} fill={gold} opacity="0.5">
           <path d="M0 0 L15 0 L15 3 L3 3 L3 15 L0 15 Z" />
@@ -49,7 +51,7 @@ function OrnateFrame({ children, gold }: { children: React.ReactNode; gold: stri
   )
 }
 
-export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
   const C = {
     bg:       colors?.bg        ?? '#F9F5F0',
     primary:  colors?.primary   ?? '#5B2C6F',
@@ -60,13 +62,14 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
     muted:    colors?.muted     ?? '#7A6B62',
     card:     '#FFFFFF',
   }
-  const { coupleNames, title, eventDate, subEvents, description, gallery } = event
+  const { coupleNames, title, eventDate, subEvents, description, gallery, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.wedding
 
   const name1 = coupleNames?.partner1 ?? title.split('&')[0]?.trim() ?? 'Partner 1'
   const name2 = coupleNames?.partner2 ?? title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2'
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
       {/* Geometric background pattern */}
       <div
         className="fixed inset-0 pointer-events-none opacity-[0.025]"
@@ -77,7 +80,7 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
       />
 
       {/* ── 1. ROYAL HERO ─────────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 py-20">
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-4 @sm:px-8 py-20">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -99,7 +102,7 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
                 style={{ ...fontDisplay, color: C.text }}
-                className="text-4xl sm:text-6xl mt-6"
+                className="text-4xl @sm:text-6xl mt-6"
               >
                 {name1}
               </motion.h1>
@@ -113,7 +116,7 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.8 }}
                 style={{ ...fontDisplay, color: C.text }}
-                className="text-4xl sm:text-6xl"
+                className="text-4xl @sm:text-6xl"
               >
                 {name2}
               </motion.h1>
@@ -132,31 +135,33 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.card }}>
-        <OrnamentalDivider gold={C.gold} />
-        <div className="max-w-2xl mx-auto mt-8">
-          <CountdownTimer
-            targetDate={eventDate}
-            boxStyle="boxed"
-            colors={{ box: C.bg, number: C.primary, label: C.muted, border: '#E8D5B8' }}
-          />
-        </div>
-        <OrnamentalDivider gold={C.gold} />
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.card }}>
+          <OrnamentalDivider gold={C.gold} />
+          <div className="max-w-2xl mx-auto mt-8">
+            <CountdownTimer
+              targetDate={eventDate}
+              boxStyle="boxed"
+              colors={{ box: C.bg, number: C.primary, label: C.muted, border: '#E8D5B8' }}
+            />
+          </div>
+          <OrnamentalDivider gold={C.gold} />
+        </section>
+      )}
 
       {/* ── 3. CEREMONIES ────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial"
           whileInView="animate"
           viewport={viewport}
           variants={staggerContainer}
-          className="px-4 sm:px-8 py-20 max-w-3xl mx-auto"
+          className="px-4 @sm:px-8 py-20 max-w-3xl mx-auto"
         >
           <motion.div variants={staggerItem} className="text-center mb-12">
             <p className="text-xs uppercase tracking-[0.3em] mb-2" style={{ color: C.muted }}>Schedule</p>
             <OrnamentalDivider gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl sm:text-4xl mt-4">
+            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl @sm:text-4xl mt-4">
               The Ceremonies
             </h2>
           </motion.div>
@@ -193,54 +198,63 @@ export default function RoyalTemplate({ event, branding, onRsvpSubmit, colors }:
       )}
 
       {/* ── 4. BLESSINGS ─────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20" style={{ background: C.card }}>
-        <OrnamentalDivider gold={C.gold} />
-        <div className="max-w-2xl mx-auto text-center py-8">
-          <p style={{ ...fontDisplay, color: C.gold }} className="text-5xl opacity-30">&ldquo;</p>
-          <p style={{ ...fontDisplay, color: C.text }} className="text-xl sm:text-2xl italic leading-relaxed -mt-4">
-            {description || 'May this union be blessed with love, respect, and joy that lasts a lifetime. We are honored to share this occasion with you.'}
-          </p>
-          <p className="mt-4 text-sm" style={{ color: C.muted }}>— With blessings</p>
-        </div>
-        <OrnamentalDivider gold={C.gold} />
-      </section>
+      {sections.about !== false && (
+        <section className="px-4 @sm:px-8 py-20" style={{ background: C.card }}>
+          <OrnamentalDivider gold={C.gold} />
+          <div className="max-w-2xl mx-auto text-center py-8">
+            <p style={{ ...fontDisplay, color: C.gold }} className="text-5xl opacity-30">&ldquo;</p>
+            <p style={{ ...fontDisplay, color: C.text }} className="text-xl @sm:text-2xl italic leading-relaxed -mt-4">
+              {description || 'May this union be blessed with love, respect, and joy that lasts a lifetime. We are honored to share this occasion with you.'}
+            </p>
+            <p className="mt-4 text-sm" style={{ color: C.muted }}>— With blessings</p>
+          </div>
+          <OrnamentalDivider gold={C.gold} />
+        </section>
+      )}
 
       {/* ── 5. GALLERY ───────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20 max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <OrnamentalDivider gold={C.gold} />
-          <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl mt-4">Gallery</h2>
-        </div>
-        <Gallery images={gallery} variant="grid" columns={3} colors={{ border: C.gold }} />
-      </section>
+      {sections.gallery !== false && (
+        <section className="px-4 @sm:px-8 py-20 max-w-4xl mx-auto">
+          <div className="max-w-lg mx-auto mb-10">
+            <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
+          </div>
+          <div className="text-center mb-10">
+            <OrnamentalDivider gold={C.gold} />
+            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl mt-4">Gallery</h2>
+          </div>
+          <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="grid" columns={3} colors={{ border: C.gold }} />
+        </section>
+      )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20" style={{ background: '#F2EBF7' }}>
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-8">
-            <OrnamentalDivider gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl sm:text-4xl mt-4">
-              Grace Us With Your Presence
-            </h2>
-          </div>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-20" style={{ background: '#F2EBF7' }}>
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-8">
+              <OrnamentalDivider gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl @sm:text-4xl mt-4">
+                Grace Us With Your Presence
+              </h2>
+            </div>
 
-          <OrnateFrame gold={C.gold}>
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{
-                button: C.primary,
-                buttonText: C.gold,
-                label: C.text,
-                checkboxAccent: C.gold,
-                successText: C.text,
-              }}
-              inputStyle="bordered"
-              successMessage="We are honored by your response. See you there."
-            />
-          </OrnateFrame>
-        </div>
-      </section>
+            <OrnateFrame gold={C.gold}>
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{
+                  button: C.primary,
+                  buttonText: C.gold,
+                  label: C.text,
+                  checkboxAccent: C.gold,
+                  successText: C.text,
+                }}
+                inputStyle="bordered"
+                successMessage="We are honored by your response. See you there."
+              />
+            </OrnateFrame>
+          </div>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-6 py-10 text-center" style={{ borderTop: `1px solid #E8D5B8` }}>

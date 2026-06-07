@@ -8,6 +8,21 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
+
+const GEOMETRIC_DEFAULTS = {
+  bg: '#F5FAF0',
+  primary: '#1A6B3A',
+  surface: '#E0F2E8',
+  secondary: '#C9A84C',
+  text: '#1A2E1A',
+  muted: '#5A7A5A',
+  goldLight: '#F5EDD0',
+  card: '#FFFFFF',
+  border: '#C5E0D0',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-plus-jakarta, "Plus Jakarta Sans", sans-serif)' }
 const fontBody = { fontFamily: 'var(--font-plus-jakarta, "Plus Jakarta Sans", sans-serif)' }
@@ -50,23 +65,20 @@ function GeoDivider({ gold }: { gold: string }) {
   )
 }
 
-export default function GeometricTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function GeometricTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const resolved = resolveColors(colors, GEOMETRIC_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#F5FAF0',
-    emerald: colors?.primary ?? '#1A6B3A',
-    emeraldLight: colors?.surface ?? '#E0F2E8',
-    gold: colors?.secondary ?? '#C9A84C',
-    goldLight: '#F5EDD0',
-    text: colors?.text ?? '#1A2E1A',
-    muted: colors?.muted ?? '#5A7A5A',
-    card: '#FFFFFF',
-    border: '#C5E0D0',
+    ...resolved,
+    emerald: resolved.primary,
+    emeraldLight: resolved.surface,
+    gold: resolved.secondary,
   }
 
-  const { title, eventDate, subEvents, description, hostName, message } = event
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. HERO ──────────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden">
@@ -101,7 +113,7 @@ export default function GeometricTemplate({ event, branding, onRsvpSubmit, color
             Eid Al-Fitr · Celebration
           </p>
           <GeoDivider gold={C.gold} />
-          <h1 style={{ ...fontDisplay, color: C.emerald }} className="text-5xl sm:text-6xl font-black mt-4 mb-2 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.emerald }} className="text-5xl @sm:text-6xl font-black mt-4 mb-2 leading-tight">
             {title}
           </h1>
           <GeoDivider gold={C.gold} />
@@ -117,22 +129,26 @@ export default function GeometricTemplate({ event, branding, onRsvpSubmit, color
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.emerald }}>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: `${C.emerald}CC`, number: C.gold, label: `${C.goldLight}80`, border: `${C.gold}30` }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.emerald }}>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: `${C.emerald}CC`, number: C.gold, label: `${C.goldLight}80`, border: `${C.gold}30` }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <GeoDivider gold={C.gold} />
-          <p style={{ ...fontDisplay, color: C.text }} className="text-xl font-medium mt-6 leading-relaxed">
-            {message || description || 'Celebrating the blessings of Eid with those we cherish. Join us in gratitude, joy, and togetherness as we mark this sacred occasion.'}
-          </p>
-        </motion.div>
-      </section>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <GeoDivider gold={C.gold} />
+            <p style={{ ...fontDisplay, color: C.text }} className="text-xl font-medium mt-6 leading-relaxed">
+              {message || description || 'Celebrating the blessings of Eid with those we cherish. Join us in gratitude, joy, and togetherness as we mark this sacred occasion.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── 4. GEOMETRIC STATS ───────────────────────────────────────── */}
       <section className="px-4 py-12" style={{ background: C.emeraldLight }}>
@@ -154,17 +170,22 @@ export default function GeometricTemplate({ event, branding, onRsvpSubmit, color
         </div>
       </section>
 
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.GeometricTemplate} alt={title} shape="landscape" />
+      </section>
+
       {/* ── 5. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16 max-w-4xl mx-auto"
+          className="px-4 @sm:px-8 py-16 max-w-4xl mx-auto"
         >
           <div className="text-center mb-8">
             <GeoDivider gold={C.gold} />
             <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl font-black mt-4">Events</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-4">
             {subEvents.map((se, i) => (
               <motion.div
                 key={se.id}
@@ -190,17 +211,19 @@ export default function GeometricTemplate({ event, branding, onRsvpSubmit, color
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.emeraldLight }}>
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <GeoDivider gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl font-black mt-4">Confirm Your Attendance</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16" style={{ background: C.emeraldLight }}>
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <GeoDivider gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl font-black mt-4">Confirm Your Attendance</h2>
+            </div>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.emerald, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
+              successMessage="Eid Mubarak! We look forward to seeing you ☽" />
           </div>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.emerald, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
-            successMessage="Eid Mubarak! We look forward to seeing you ☽" />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ background: C.emerald }}>

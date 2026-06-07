@@ -5,6 +5,7 @@ import { staggerContainer, staggerItem, viewport } from '@/lib/motion'
 
 interface GalleryProps {
   images: string[]
+  fallbackImages?: string[]
   variant?: 'grid' | 'masonry' | 'polaroid' | 'mosaic' | 'filmstrip'
   columns?: 2 | 3
   colors?: {
@@ -14,16 +15,16 @@ interface GalleryProps {
 }
 
 const FALLBACK_IMAGES = [
-  'https://picsum.photos/seed/gallery1/600/400',
-  'https://picsum.photos/seed/gallery2/600/450',
-  'https://picsum.photos/seed/gallery3/600/380',
-  'https://picsum.photos/seed/gallery4/600/420',
-  'https://picsum.photos/seed/gallery5/600/400',
-  'https://picsum.photos/seed/gallery6/600/460',
+  'https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80',
+  'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=600&q=80',
+  'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600&q=80',
+  'https://images.unsplash.com/photo-1464699908537-0954e50791ee?w=600&q=80',
+  'https://images.unsplash.com/photo-1510076857177-7470076d4098?w=600&q=80',
+  'https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600&q=80',
 ]
 
-export default function Gallery({ images, variant = 'grid', columns = 3, colors = {} }: GalleryProps) {
-  const imgs = images.length > 0 ? images : FALLBACK_IMAGES
+export default function Gallery({ images, fallbackImages, variant = 'grid', columns = 3, colors = {} }: GalleryProps) {
+  const imgs = images.length > 0 ? images : (fallbackImages ?? FALLBACK_IMAGES)
 
   if (variant === 'polaroid') {
     const rotations = [-2, 1.5, -1, 2, -1.5, 1]
@@ -33,7 +34,7 @@ export default function Gallery({ images, variant = 'grid', columns = 3, colors 
         whileInView="animate"
         viewport={viewport}
         variants={staggerContainer}
-        className="grid grid-cols-2 sm:grid-cols-3 gap-6"
+        className="grid grid-cols-2 @sm:grid-cols-3 gap-6"
       >
         {imgs.slice(0, 6).map((src, i) => (
           <motion.div
@@ -78,7 +79,7 @@ export default function Gallery({ images, variant = 'grid', columns = 3, colors 
       <div className="overflow-x-auto pb-4">
         <div className="flex gap-3" style={{ width: 'max-content' }}>
           {imgs.slice(0, 8).map((src, i) => (
-            <div key={i} className="w-48 flex-shrink-0 rounded-xl overflow-hidden">
+            <div key={i} className="w-48 shrink-0 rounded-xl overflow-hidden">
               <img src={src} alt="" className="w-full h-36 object-cover" />
             </div>
           ))}
@@ -87,7 +88,7 @@ export default function Gallery({ images, variant = 'grid', columns = 3, colors 
     )
   }
 
-  const colClass = columns === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3'
+  const colClass = columns === 2 ? 'grid-cols-2' : 'grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3'
 
   return (
     <motion.div
@@ -107,7 +108,7 @@ export default function Gallery({ images, variant = 'grid', columns = 3, colors 
           <img
             src={src}
             alt=""
-            className="w-full aspect-[4/3] object-cover transition-transform duration-500 group-hover:scale-105"
+            className="w-full aspect-4/3 object-cover transition-transform duration-500 group-hover:scale-105"
           />
           {colors.overlay && (
             <div

@@ -3,9 +3,12 @@
 import { motion } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import type { TemplateProps } from '@/lib/templates-data'
+import { resolveColors } from '@/lib/template-colors'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
 
@@ -29,24 +32,28 @@ function NavyGoldRule({ navy, gold }: { navy: string; gold: string }) {
   )
 }
 
-export default function GraduationTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = {
-    bg: colors?.bg ?? '#F8F9FD',
-    navy: colors?.primary ?? '#1E3A5F',
-    navyLight: colors?.surface ?? '#E8EEF5',
-    gold: colors?.secondary ?? '#C9A84C',
-    goldLight: '#F5EDD0',
-    text: colors?.text ?? '#1A2035',
-    muted: colors?.muted ?? '#6A7A90',
-    card: '#FFFFFF',
-    border: '#D5DEE8',
-  }
+const GRADUATION_DEFAULTS = {
+  bg: '#F8F9FD',
+  primary: '#1E3A5F',
+  surface: '#E8EEF5',
+  secondary: '#C9A84C',
+  goldLight: '#F5EDD0',
+  text: '#1A2035',
+  muted: '#6A7A90',
+  card: '#FFFFFF',
+  border: '#D5DEE8',
+}
 
-  const { title, eventDate, subEvents, description, personName, hostName, message } = event
+export default function GraduationTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const { bg, primary: navy, surface: navyLight, secondary: gold, goldLight, text, muted, card, border } = resolveColors(colors, GRADUATION_DEFAULTS)
+  const C = { bg, navy, navyLight, gold, goldLight, text, muted, card, border }
+
+  const { title, eventDate, subEvents, description, personName, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.graduation
   const graduateName = personName ?? hostName ?? title.split("'s")[0]
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. ACHIEVEMENT HERO ──────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden">
@@ -80,7 +87,7 @@ export default function GraduationTemplate({ event, branding, onRsvpSubmit, colo
             Class of {new Date(eventDate).getFullYear()}
           </p>
           <NavyGoldRule navy={C.navy} gold={C.gold} />
-          <h1 style={{ ...fontDisplay, color: C.navy }} className="text-5xl sm:text-7xl font-black mt-4 mb-2 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.navy }} className="text-5xl @sm:text-7xl font-black mt-4 mb-2 leading-tight">
             {graduateName}
           </h1>
           <p style={{ ...fontDisplay, color: C.gold }} className="text-2xl font-bold mb-4">
@@ -95,7 +102,7 @@ export default function GraduationTemplate({ event, branding, onRsvpSubmit, colo
 
       {/* ── 2. ACHIEVEMENT BADGES ────────────────────────────────────── */}
       <section className="px-4 py-12" style={{ background: C.navy }}>
-        <div className="max-w-3xl mx-auto grid grid-cols-4 gap-4 text-center">
+        <div className="max-w-3xl mx-auto grid grid-cols-2 @sm:grid-cols-4 gap-4 text-center">
           {ACHIEVEMENTS.map((a, i) => (
             <motion.div
               key={a.label}
@@ -113,32 +120,43 @@ export default function GraduationTemplate({ event, branding, onRsvpSubmit, colo
       </section>
 
       {/* ── 3. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.goldLight }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Celebration in</p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.card, number: C.navy, label: C.muted, border: C.border }} />
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.goldLight }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Celebration in</p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.card, number: C.navy, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
+
+      {/* ── 4. MESSAGE ───────────────────────────────────────────────── */}
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <NavyGoldRule navy={C.navy} gold={C.gold} />
+            <p style={{ ...fontDisplay, color: C.navy }} className="text-2xl font-bold mt-6 mb-4">
+              Years of hard work, finally celebrated.
+            </p>
+            <p className="text-base leading-relaxed" style={{ color: C.muted }}>
+              {message || description || `Please join us in celebrating ${graduateName}'s incredible achievement. Your presence would mean the world as we mark this milestone together.`}
+            </p>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <div className="max-w-xs mx-auto">
+          <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="portrait" />
         </div>
       </section>
 
-      {/* ── 4. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <NavyGoldRule navy={C.navy} gold={C.gold} />
-          <p style={{ ...fontDisplay, color: C.navy }} className="text-2xl font-bold mt-6 mb-4">
-            Years of hard work, finally celebrated.
-          </p>
-          <p className="text-base leading-relaxed" style={{ color: C.muted }}>
-            {message || description || `Please join us in celebrating ${graduateName}'s incredible achievement. Your presence would mean the world as we mark this milestone together.`}
-          </p>
-        </motion.div>
-      </section>
-
       {/* ── 5. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.navyLight }}
         >
           <div className="max-w-3xl mx-auto">
@@ -146,7 +164,7 @@ export default function GraduationTemplate({ event, branding, onRsvpSubmit, colo
               <NavyGoldRule navy={C.navy} gold={C.gold} />
               <h2 style={{ ...fontDisplay, color: C.navy }} className="text-3xl font-black mt-4">Celebration Details</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div
                   key={se.id}
@@ -167,17 +185,19 @@ export default function GraduationTemplate({ event, branding, onRsvpSubmit, colo
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <NavyGoldRule navy={C.navy} gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.navy }} className="text-3xl font-black mt-4">Will You Be There?</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <NavyGoldRule navy={C.navy} gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.navy }} className="text-3xl font-black mt-4">Will You Be There?</h2>
+            </div>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.navy, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
+              successMessage="See you at the celebration! 🎓" />
           </div>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.navy, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
-            successMessage="See you at the celebration! 🎓" />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer

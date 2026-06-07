@@ -8,6 +8,9 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
 
 const DEFAULTS = {
   bg: '#030818',
@@ -65,16 +68,14 @@ function StarDivider({ color }: { color: string }) {
   )
 }
 
-export default function FireworksNightTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = colors ? {
-    bg: colors.bg, surface: colors.surface, primary: colors.primary,
-    secondary: colors.secondary, text: colors.text, muted: colors.muted,
-  } : DEFAULTS
+export default function FireworksNightTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const C = resolveColors(colors, DEFAULTS)
 
-  const { title, eventDate, subEvents, description } = event
+  const { title, eventDate, subEvents, description, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, fontFamily: 'var(--font-inter, "Inter", sans-serif)' }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, fontFamily: 'var(--font-inter, "Inter", sans-serif)' }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── HERO ── */}
       <section className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center relative overflow-hidden">
@@ -96,7 +97,7 @@ export default function FireworksNightTemplate({ event, branding, onRsvpSubmit, 
           <FireworksDisplay primary={C.primary} secondary={C.secondary} />
 
           <h1
-            className="text-4xl sm:text-5xl font-bold leading-tight mb-4"
+            className="text-4xl @sm:text-5xl font-bold leading-tight mb-4"
             style={{ fontFamily: 'var(--font-syne, "Syne", sans-serif)', color: C.secondary }}
           >
             {title}
@@ -111,21 +112,28 @@ export default function FireworksNightTemplate({ event, branding, onRsvpSubmit, 
       </section>
 
       {/* ── COUNTDOWN ── */}
-      <section className="py-16 px-6 text-center" style={{ background: C.surface }}>
-        <p className="text-sm font-semibold uppercase tracking-widest mb-6" style={{ color: C.primary }}>Time Until Midnight</p>
-        <CountdownTimer targetDate={eventDate} colors={{ number: C.primary, label: C.muted }} />
-      </section>
+      {sections.countdown !== false && (
+        <section className="py-16 px-6 text-center" style={{ background: C.surface }}>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-6" style={{ color: C.primary }}>Time Until Midnight</p>
+          <CountdownTimer targetDate={eventDate} colors={{ number: C.primary, label: C.muted }} />
+        </section>
+      )}
 
       {/* ── ABOUT ── */}
-      {description && (
+      {sections.about !== false && description && (
         <section className="py-16 px-6 max-w-xl mx-auto text-center">
           <StarDivider color={C.primary} />
           <p className="text-base leading-relaxed mt-4" style={{ color: C.muted }}>{description}</p>
         </section>
       )}
 
+      {/* ── cover photo ── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.FireworksNightTemplate} alt={title} shape="landscape" />
+      </section>
+
       {/* ── SUB-EVENTS ── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <section className="py-16 px-6" style={{ background: C.surface }}>
           <div className="max-w-xl mx-auto">
             <h2
@@ -163,17 +171,19 @@ export default function FireworksNightTemplate({ event, branding, onRsvpSubmit, 
       )}
 
       {/* ── RSVP ── */}
-      <section className="py-16 px-6">
-        <div className="max-w-md mx-auto">
-          <h2
-            className="text-2xl font-bold text-center mb-8"
-            style={{ fontFamily: 'var(--font-syne, "Syne", sans-serif)', color: C.secondary }}
-          >
-            Join the Countdown
-          </h2>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit} colors={{ button: C.primary }} />
-        </div>
-      </section>
+      {sections.rsvp !== false && (
+        <section className="py-16 px-6">
+          <div className="max-w-md mx-auto">
+            <h2
+              className="text-2xl font-bold text-center mb-8"
+              style={{ fontFamily: 'var(--font-syne, "Syne", sans-serif)', color: C.secondary }}
+            >
+              Join the Countdown
+            </h2>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit} colors={{ button: C.primary }} />
+          </div>
+        </section>
+      )}
 
       {/* ── SHARE ── */}
       <section className="py-10 px-6 text-center" style={{ background: C.surface }}>

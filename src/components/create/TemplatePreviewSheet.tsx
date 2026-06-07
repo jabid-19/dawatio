@@ -191,23 +191,20 @@ export function TemplatePreviewSheet({
                     transition={{ duration: 0.18, ease: 'easeOut' }}
                     className="flex justify-center py-8 px-4"
                   >
-                    {/* Phone frame */}
-                    <div className="relative">
-                      <div
-                        className="relative rounded-[2.5rem] overflow-hidden"
-                        style={{
-                          width: '100%',
-                          maxWidth: '360px',
-                          boxShadow: '0 0 0 8px #1a1714, 0 0 0 10px #3d3a36, 0 24px 60px rgba(26,23,20,0.35)',
-                        }}
-                      >
-                        {/* Phone notch bar */}
-                        <div className="relative bg-[#1a1714] h-8 flex items-center justify-center shrink-0">
-                          <div className="w-20 h-4 bg-[#1a1714] rounded-full border border-[#3d3a36]" />
-                        </div>
-                        <div className="pointer-events-none select-none">
-                          <TemplateRenderer event={previewEvent} />
-                        </div>
+                    {/* Phone frame — explicit width so @container measures correctly */}
+                    <div
+                      className="relative rounded-[2.5rem] overflow-hidden"
+                      style={{
+                        width: 'min(360px, 100%)',
+                        boxShadow: '0 0 0 8px #1a1714, 0 0 0 10px #3d3a36, 0 24px 60px rgba(26,23,20,0.35)',
+                      }}
+                    >
+                      {/* Phone notch bar */}
+                      <div className="relative bg-[#1a1714] h-8 flex items-center justify-center shrink-0">
+                        <div className="w-20 h-4 bg-[#1a1714] rounded-full border border-[#3d3a36]" />
+                      </div>
+                      <div className="pointer-events-none select-none">
+                        <TemplateRenderer event={previewEvent} />
                       </div>
                     </div>
                   </motion.div>

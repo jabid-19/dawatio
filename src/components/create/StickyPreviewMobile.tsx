@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { Eye, ChevronRight, X } from 'lucide-react'
-import { EventType, SubEvent } from '@/lib/dummy-data'
 import { TemplateRenderer } from '@/lib/template-utils'
-import { LivePreview } from './LivePreview'
+import { LivePreview, formToEvent } from './LivePreview'
 import type { CreateFormState } from './LivePreview'
 import { spring } from '@/lib/motion'
 
@@ -22,36 +21,7 @@ export function StickyPreviewMobile({ form, className }: StickyPreviewMobileProp
     ? form.template.charAt(0).toUpperCase() + form.template.slice(1)
     : 'Default'
 
-  // Build a minimal preview event for the thumbnail
-  const previewEvent = {
-    id: 'preview',
-    title: form.title || 'Your Event',
-    type: form.type || ('other' as const),
-    slug: 'preview',
-    status: 'draft' as const,
-    plan: 'free' as const,
-    createdAt: new Date().toISOString().split('T')[0],
-    eventDate: form.date || new Date().toISOString().split('T')[0],
-    expiresAt: new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0],
-    coverImage: form.coverImage,
-    subEvents:
-      form.ceremonies.length > 0
-        ? form.ceremonies
-        : [
-            {
-              id: 'se_preview',
-              name: form.title || 'The Event',
-              date: form.date || '',
-              time: form.time || '6:00 PM',
-              venue: form.venue || 'Venue TBD',
-            },
-          ],
-    rsvpCount: 0,
-    guestCount: 50,
-    template: form.template,
-    colorScheme: form.colorScheme,
-    description: form.description,
-  }
+  const previewEvent = useMemo(() => formToEvent(form), [form])
 
   return (
     <>
@@ -59,9 +29,12 @@ export function StickyPreviewMobile({ form, className }: StickyPreviewMobileProp
       <div
         className={`sticky top-0 z-30 bg-cream/95 backdrop-blur-sm border-b border-border py-3 px-4 lg:hidden ${className ?? ''}`}
       >
-        <button
+        <div
           onClick={() => setOpen(true)}
-          className="flex items-center gap-3 w-full"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => e.key === 'Enter' && setOpen(true)}
+          className="flex items-center gap-3 w-full cursor-pointer"
           aria-label="Open live preview"
         >
           {/* Mini thumbnail */}
@@ -71,7 +44,7 @@ export function StickyPreviewMobile({ form, className }: StickyPreviewMobileProp
               style={{
                 transform: 'scale(0.41)',
                 transformOrigin: 'top left',
-                width: '390px',
+                width: '383px',
                 position: 'absolute',
                 top: 0,
                 left: 0,
@@ -93,7 +66,7 @@ export function StickyPreviewMobile({ form, className }: StickyPreviewMobileProp
 
           {/* Right chevron */}
           <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
-        </button>
+        </div>
       </div>
 
       {/* Fullscreen preview sheet */}

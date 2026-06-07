@@ -3,35 +3,41 @@
 import { motion } from 'motion/react'
 import { MapPin, Calendar, Clock } from 'lucide-react'
 import type { TemplateProps } from '@/lib/templates-data'
+import { resolveColors } from '@/lib/template-colors'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
 
-const C = {
+const SIMPLE_DEFAULTS = {
   bg: '#FFFFFF',
   surface: '#F8F9FA',
   primary: '#3B82F6',
+  secondary: '#3B82F6',
   text: '#111827',
   muted: '#6B7280',
   border: '#E5E7EB',
   card: '#FFFFFF',
-} as const
+}
 
 const fontBody = { fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }
 
-export default function SimpleTemplate({ event, branding, onRsvpSubmit }: TemplateProps) {
-  const { title, eventDate, subEvents, description, hostName, message } = event
+export default function SimpleTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const C = resolveColors(colors, SIMPLE_DEFAULTS)
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.other
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. HERO ──────────────────────────────────────────────────── */}
       <section className="px-6 py-20 max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <div className="h-1 w-12 mb-8 rounded-full" style={{ background: C.primary }} />
-          <h1 className="text-4xl sm:text-6xl font-bold leading-tight mb-4" style={{ color: C.text }}>
+          <h1 className="text-4xl @sm:text-6xl font-bold leading-tight mb-4" style={{ color: C.text }}>
             {title}
           </h1>
           {hostName && (
@@ -46,7 +52,7 @@ export default function SimpleTemplate({ event, branding, onRsvpSubmit }: Templa
             </span>
           </div>
           {subEvents[0] && (
-            <div className="flex items-center gap-2 mt-2" style={{ color: C.muted }}>
+            <div className="flex items-center gap-2 mt-2 flex-wrap" style={{ color: C.muted }}>
               <Clock className="w-4 h-4" />
               <span className="text-sm">{subEvents[0].time}</span>
               <MapPin className="w-4 h-4 ml-2" />
@@ -57,15 +63,17 @@ export default function SimpleTemplate({ event, branding, onRsvpSubmit }: Templa
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-10" style={{ background: C.surface }}>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.card, number: C.primary, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-10" style={{ background: C.surface }}>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.card, number: C.primary, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. DESCRIPTION ───────────────────────────────────────────── */}
-      {(description || message) && (
+      {sections.about !== false && (description || message) && (
         <section className="px-6 py-16 max-w-2xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
             <p className="text-base leading-relaxed" style={{ color: C.muted }}>
@@ -75,8 +83,13 @@ export default function SimpleTemplate({ event, branding, onRsvpSubmit }: Templa
         </section>
       )}
 
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
+      </section>
+
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 1 && (
+      {sections.schedule !== false && subEvents.length > 1 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
           className="px-4 py-12 max-w-2xl mx-auto"
@@ -105,15 +118,17 @@ export default function SimpleTemplate({ event, branding, onRsvpSubmit }: Templa
       )}
 
       {/* ── 5. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 py-16" style={{ background: C.surface }}>
-        <div className="max-w-lg mx-auto">
-          <h2 className="text-xl font-bold mb-6" style={{ color: C.text }}>RSVP</h2>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.primary, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.primary }}
-            inputStyle="bordered"
-            successMessage="See you there!" />
-        </div>
-      </section>
+      {sections.rsvp !== false && (
+        <section className="px-4 py-16" style={{ background: C.surface }}>
+          <div className="max-w-lg mx-auto">
+            <h2 className="text-xl font-bold mb-6" style={{ color: C.text }}>RSVP</h2>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.primary, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.primary }}
+              inputStyle="bordered"
+              successMessage="See you there!" />
+          </div>
+        </section>
+      )}
 
       {/* ── 6. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-8 text-center" style={{ borderTop: `1px solid ${C.border}` }}>

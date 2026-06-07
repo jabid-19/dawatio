@@ -5,9 +5,25 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const ELEGANT_AGE_DEFAULTS = {
+  bg: '#FDFBF7',
+  primary: '#1A1A2E',
+  secondary: '#B76E79',
+  surface: '#FFFFFF',
+  text: '#1A1A2E',
+  muted: '#8A8698',
+  // template-specific extras
+  gold: '#C9A84C',
+  card: '#FFFFFF',
+  border: '#E8E0D8',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-cormorant, "Cormorant Garamond", serif)' }
 const fontBody = { fontFamily: 'var(--font-raleway, "Raleway", sans-serif)' }
@@ -22,24 +38,16 @@ const MILESTONES = [
   { year: `${new Date().getFullYear()}`, label: `Turning ${AGE}` },
 ]
 
-export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = {
-    bg: colors?.bg ?? '#FDFBF7',
-    primary: colors?.primary ?? '#1A1A2E',
-    rose: colors?.secondary ?? '#B76E79',
-    gold: colors?.secondary ?? '#C9A84C',
-    text: colors?.text ?? '#1A1A2E',
-    muted: colors?.muted ?? '#8A8698',
-    card: '#FFFFFF',
-    border: '#E8E0D8',
-  }
+export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const C = resolveColors(colors, ELEGANT_AGE_DEFAULTS)
 
-  const { personName, title, eventDate, subEvents, description, gallery, hostName } = event
+  const { personName, title, eventDate, subEvents, description, gallery, hostName, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.birthday
   const name = personName ?? title.split("'s")[0] ?? 'The Guest of Honour'
   const initials = name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. MONOGRAM HERO ─────────────────────────────────────────── */}
       <section className="min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center">
@@ -85,7 +93,7 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
             style={{ ...fontDisplay, color: C.text }}
-            className="text-3xl sm:text-4xl font-semibold mb-2 tracking-widest"
+            className="text-3xl @sm:text-4xl font-semibold mb-2 tracking-widest"
           >
             {name}
           </motion.h1>
@@ -94,7 +102,7 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
             style={{ ...fontDisplay, color: C.gold }}
-            className="text-2xl sm:text-3xl italic"
+            className="text-2xl @sm:text-3xl italic"
           >
             {AGE} Beautiful Years
           </motion.p>
@@ -118,43 +126,47 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.card }}>
-        <div className="max-w-2xl mx-auto">
-          <div className="h-px mb-8" style={{ background: C.border }} />
-          <CountdownTimer
-            targetDate={eventDate}
-            boxStyle="inline"
-            colors={{ number: C.primary, label: C.muted }}
-          />
-          <div className="h-px mt-8" style={{ background: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.card }}>
+          <div className="max-w-2xl mx-auto">
+            <div className="h-px mb-8" style={{ background: C.border }} />
+            <CountdownTimer
+              targetDate={eventDate}
+              boxStyle="inline"
+              colors={{ number: C.primary, label: C.muted }}
+            />
+            <div className="h-px mt-8" style={{ background: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. PERSONAL LETTER ───────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16 max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, rotate: -1 }}
-          whileInView={{ opacity: 1, rotate: 0 }}
-          viewport={viewport}
-          transition={{ duration: 0.6 }}
-          className="rounded-2xl p-8 sm:p-10"
-          style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 4px 24px rgba(0,0,0,0.05)' }}
-        >
-          <p style={{ ...fontDisplay, color: C.muted }} className="italic mb-4 text-lg">Dear friends and family,</p>
-          <p className="leading-relaxed text-base mb-6" style={{ color: C.text }}>
-            {description || `It is with immense joy that we celebrate this milestone. ${name}'s ${AGE} years have been a journey filled with love, growth, and countless beautiful memories. Please join us as we honour this extraordinary person.`}
-          </p>
-          <p style={{ ...fontDisplay, color: C.muted }} className="italic text-right">— With love, {hostName ?? name}</p>
-        </motion.div>
-      </section>
+      {sections.about !== false && (
+        <section className="px-4 @sm:px-8 py-16 max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, rotate: -1 }}
+            whileInView={{ opacity: 1, rotate: 0 }}
+            viewport={viewport}
+            transition={{ duration: 0.6 }}
+            className="rounded-2xl p-5 @sm:p-8 @md:p-10"
+            style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: '0 4px 24px rgba(0,0,0,0.05)' }}
+          >
+            <p style={{ ...fontDisplay, color: C.muted }} className="italic mb-4 text-lg">Dear friends and family,</p>
+            <p className="leading-relaxed text-base mb-6" style={{ color: C.text }}>
+              {description || `It is with immense joy that we celebrate this milestone. ${name}'s ${AGE} years have been a journey filled with love, growth, and countless beautiful memories. Please join us as we honour this extraordinary person.`}
+            </p>
+            <p style={{ ...fontDisplay, color: C.muted }} className="italic text-right">— With love, {hostName ?? name}</p>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── 4. MILESTONE TIMELINE ────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: '#F5F0F8' }}>
+      <section className="px-4 @sm:px-8 py-16" style={{ background: '#F5F0F8' }}>
         <div className="max-w-4xl mx-auto">
           <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl text-center mb-10">A Life Well Lived</h2>
 
           {/* Desktop horizontal timeline */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden @md:flex items-center">
             {MILESTONES.map((m, i) => (
               <div key={i} className="flex-1 relative">
                 <motion.div
@@ -176,7 +188,7 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
           </div>
 
           {/* Mobile vertical timeline */}
-          <div className="md:hidden flex flex-col gap-4">
+          <div className="@md:hidden flex flex-col gap-4">
             {MILESTONES.map((m, i) => (
               <motion.div
                 key={i}
@@ -207,13 +219,13 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
           whileInView="animate"
           viewport={viewport}
           variants={staggerContainer}
-          className="px-4 sm:px-8 py-16 max-w-3xl mx-auto"
+          className="px-4 @sm:px-8 py-16 max-w-3xl mx-auto"
         >
           {subEvents.map((se) => (
             <motion.div
               key={se.id}
               variants={staggerItem}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-3 py-4"
+              className="grid grid-cols-1 @sm:grid-cols-3 gap-3 py-4"
               style={{ borderBottom: `1px solid ${C.border}` }}
             >
               <p style={{ ...fontDisplay, color: C.gold }} className="text-lg italic">{se.name}</p>
@@ -228,14 +240,17 @@ export default function ElegantAgeTemplate({ event, branding, onRsvpSubmit, colo
       )}
 
       {/* ── 6. GALLERY ───────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16 max-w-4xl mx-auto">
+      <section className="px-4 @sm:px-8 py-16 max-w-4xl mx-auto">
         <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl text-center mb-10">Gallery</h2>
-        <Gallery images={gallery} variant="grid" columns={3}
+        <div className="max-w-xs mx-auto mb-10">
+          <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="portrait" />
+        </div>
+        <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="grid" columns={3}
           colors={{ border: C.gold, overlay: `rgba(201,168,76,0.2)` }} />
       </section>
 
       {/* ── 7. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.card }}>
+      <section className="px-4 @sm:px-8 py-16" style={{ background: C.card }}>
         <div className="max-w-lg mx-auto">
           <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl text-center mb-8">Please RSVP</h2>
           <RSVPForm

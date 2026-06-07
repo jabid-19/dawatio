@@ -8,15 +8,18 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
 
-const C = {
+const CRESCENT_DEFAULTS = {
   bg: '#F5FAF5',
-  emerald: '#1A5C3A',
-  emeraldLight: '#E8F5EE',
-  gold: '#C9A84C',
-  goldLight: '#F5EDD0',
+  primary: '#1A5C3A',
+  surface: '#E8F5EE',
+  secondary: '#C9A84C',
   text: '#1A2E1A',
   muted: '#5A7A5A',
+  goldLight: '#F5EDD0',
   card: '#FFFFFF',
   border: '#D0E8D8',
 } as const
@@ -24,7 +27,7 @@ const C = {
 const fontDisplay = { fontFamily: 'var(--font-amiri, "Amiri", serif)' }
 const fontBody = { fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }
 
-function CrescentMoon() {
+function CrescentMoon({ gold }: { gold: string }) {
   return (
     <div className="flex items-center justify-center my-6">
       <motion.div
@@ -36,17 +39,17 @@ function CrescentMoon() {
           {/* Crescent */}
           <path
             d="M55 40 C55 54.36 43.36 66 29 66 C22.5 66 16.5 63.5 12 59.3 C17.5 61.3 23.5 62 30 60 C46 55 55 44 55 40Z"
-            fill={C.gold}
+            fill={gold}
             opacity="0.2"
           />
           <path
             d="M40 10 C25 10 13 22 13 37 C13 52 25 64 40 64 C30 64 22 55 22 44 C22 28 33 16 40 10Z"
-            fill={C.gold}
+            fill={gold}
           />
           {/* Star */}
           <polygon
             points="58,20 60,26 66,26 61,30 63,36 58,32 53,36 55,30 50,26 56,26"
-            fill={C.gold}
+            fill={gold}
             transform="scale(0.8) translate(12, 0)"
           />
         </svg>
@@ -55,23 +58,31 @@ function CrescentMoon() {
   )
 }
 
-function IslamicBorder() {
+function IslamicBorder({ gold }: { gold: string }) {
   return (
     <div className="flex items-center gap-2 my-3">
-      <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${C.gold})` }} />
-      <svg viewBox="0 0 40 20" className="w-10 h-5" fill={C.gold}>
+      <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${gold})` }} />
+      <svg viewBox="0 0 40 20" className="w-10 h-5" fill={gold}>
         <polygon points="20,2 22,8 28,8 23,12 25,18 20,14 15,18 17,12 12,8 18,8" />
       </svg>
-      <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${C.gold}, transparent)` }} />
+      <div className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${gold}, transparent)` }} />
     </div>
   )
 }
 
-export default function CrescentTemplate({ event, branding, onRsvpSubmit }: TemplateProps) {
-  const { title, eventDate, subEvents, description, hostName, message } = event
+export default function CrescentTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const resolved = resolveColors(colors, CRESCENT_DEFAULTS)
+  const C = {
+    ...resolved,
+    emerald: resolved.primary,
+    emeraldLight: resolved.surface,
+    gold: resolved.secondary,
+  }
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. HERO ──────────────────────────────────────────────────── */}
       <section
@@ -83,12 +94,12 @@ export default function CrescentTemplate({ event, branding, onRsvpSubmit }: Temp
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </p>
           <p className="text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>In the name of Allah</p>
-          <IslamicBorder />
-          <CrescentMoon />
-          <h1 style={{ ...fontDisplay, color: C.emerald }} className="text-5xl sm:text-7xl mt-2 mb-2">
+          <IslamicBorder gold={C.gold} />
+          <CrescentMoon gold={C.gold} />
+          <h1 style={{ ...fontDisplay, color: C.emerald }} className="text-5xl @sm:text-7xl mt-2 mb-2">
             {title}
           </h1>
-          <IslamicBorder />
+          <IslamicBorder gold={C.gold} />
           <p style={{ ...fontDisplay, color: C.gold }} className="text-2xl italic mt-4">
             عيد مبارك
           </p>
@@ -105,39 +116,48 @@ export default function CrescentTemplate({ event, branding, onRsvpSubmit }: Temp
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.emerald }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: `${C.goldLight}AA` }}>
-            Counting down
-          </p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: `${C.emerald}CC`, number: C.gold, label: `${C.goldLight}99`, border: `${C.gold}40` }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.emerald }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: `${C.goldLight}AA` }}>
+              Counting down
+            </p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: `${C.emerald}CC`, number: C.gold, label: `${C.goldLight}99`, border: `${C.gold}40` }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <IslamicBorder />
-          <p style={{ ...fontDisplay, color: C.emerald }} className="text-2xl mt-6 mb-4 leading-relaxed">
-            {message || description || 'May this blessed occasion bring joy, peace, and prosperity to you and your family. With warm Eid greetings, we invite you to share in our celebration.'}
-          </p>
-          <IslamicBorder />
-        </motion.div>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <IslamicBorder gold={C.gold} />
+            <p style={{ ...fontDisplay, color: C.emerald }} className="text-2xl mt-6 mb-4 leading-relaxed">
+              {message || description || 'May this blessed occasion bring joy, peace, and prosperity to you and your family. With warm Eid greetings, we invite you to share in our celebration.'}
+            </p>
+            <IslamicBorder gold={C.gold} />
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.CrescentTemplate} alt={title} shape="landscape" />
       </section>
 
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.emeraldLight }}
         >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
               <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl">Programme</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se) => (
                 <motion.div
                   key={se.id}
@@ -158,20 +178,22 @@ export default function CrescentTemplate({ event, branding, onRsvpSubmit }: Temp
       )}
 
       {/* ── 5. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl">Kindly Confirm</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <h2 style={{ ...fontDisplay, color: C.emerald }} className="text-3xl">Kindly Confirm</h2>
+            </div>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.emerald, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
+              successMessage="Jazak Allah Khair — we look forward to celebrating with you!" />
           </div>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.emerald, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
-            successMessage="Jazak Allah Khair — we look forward to celebrating with you!" />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 6. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ background: C.emerald, borderTop: `2px solid ${C.gold}40` }}>
-        <CrescentMoon />
+        <CrescentMoon gold={C.gold} />
         <p style={{ ...fontDisplay, color: C.goldLight }} className="text-xl">{title}</p>
         <p className="text-xs mt-1 uppercase tracking-widest" style={{ color: `${C.goldLight}99` }}>Eid Mubarak</p>
         <DawatBranding show={branding.showDawatBranding} colors={{ text: `${C.goldLight}80` }} />

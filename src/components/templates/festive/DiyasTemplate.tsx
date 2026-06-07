@@ -8,6 +8,9 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
 
 const DEFAULTS = {
   bg: '#FDF6EE',
@@ -64,16 +67,14 @@ function OrnamantLine({ color }: { color: string }) {
   )
 }
 
-export default function DiyasTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = colors ? {
-    bg: colors.bg, surface: colors.surface, primary: colors.primary,
-    secondary: colors.secondary, text: colors.text, muted: colors.muted,
-  } : DEFAULTS
+export default function DiyasTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const C = resolveColors(colors, DEFAULTS)
 
-  const { title, eventDate, subEvents, description } = event
+  const { title, eventDate, subEvents, description, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── HERO ── */}
       <section
@@ -93,7 +94,7 @@ export default function DiyasTemplate({ event, branding, onRsvpSubmit, colors }:
           <DiwasDiyas primary={C.primary} secondary={C.secondary} />
 
           <h1
-            className="text-4xl sm:text-5xl font-bold mb-4 leading-tight"
+            className="text-4xl @sm:text-5xl font-bold mb-4 leading-tight"
             style={{ fontFamily: 'var(--font-playfair, serif)', color: C.primary }}
           >
             {title}
@@ -108,21 +109,28 @@ export default function DiyasTemplate({ event, branding, onRsvpSubmit, colors }:
       </section>
 
       {/* ── COUNTDOWN ── */}
-      <section className="py-16 px-6 text-center" style={{ background: C.surface }}>
-        <p className="text-sm font-semibold uppercase tracking-widest mb-6" style={{ color: C.primary }}>Celebrations Begin In</p>
-        <CountdownTimer targetDate={eventDate} colors={{ number: C.primary, label: C.muted }} />
-      </section>
+      {sections.countdown !== false && (
+        <section className="py-16 px-6 text-center" style={{ background: C.surface }}>
+          <p className="text-sm font-semibold uppercase tracking-widest mb-6" style={{ color: C.primary }}>Celebrations Begin In</p>
+          <CountdownTimer targetDate={eventDate} colors={{ number: C.primary, label: C.muted }} />
+        </section>
+      )}
 
       {/* ── ABOUT ── */}
-      {description && (
+      {sections.about !== false && description && (
         <section className="py-16 px-6 max-w-xl mx-auto text-center">
           <OrnamantLine color={C.secondary} />
           <p className="text-base leading-relaxed mt-4" style={{ color: C.muted }}>{description}</p>
         </section>
       )}
 
+      {/* ── cover photo ── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.DiyasTemplate} alt={title} shape="landscape" />
+      </section>
+
       {/* ── SUB-EVENTS ── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <section className="py-16 px-6" style={{ background: C.surface }}>
           <div className="max-w-xl mx-auto">
             <h2 className="text-2xl font-bold text-center mb-8" style={{ fontFamily: 'var(--font-playfair, serif)', color: C.primary }}>
@@ -164,14 +172,16 @@ export default function DiyasTemplate({ event, branding, onRsvpSubmit, colors }:
       )}
 
       {/* ── RSVP ── */}
-      <section className="py-16 px-6">
-        <div className="max-w-md mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8" style={{ fontFamily: 'var(--font-playfair, serif)', color: C.primary }}>
-            Join the Celebration
-          </h2>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit} colors={{ button: C.primary }} />
-        </div>
-      </section>
+      {sections.rsvp !== false && (
+        <section className="py-16 px-6">
+          <div className="max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-center mb-8" style={{ fontFamily: 'var(--font-playfair, serif)', color: C.primary }}>
+              Join the Celebration
+            </h2>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit} colors={{ button: C.primary }} />
+          </div>
+        </section>
+      )}
 
       {/* ── SHARE ── */}
       <section className="py-10 px-6 text-center" style={{ background: C.surface }}>

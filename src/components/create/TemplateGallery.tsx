@@ -110,7 +110,7 @@ function TemplateThumbnail({ template }: { template: Template }) {
     <div className="h-64 relative overflow-hidden bg-white">
       <div
         className="absolute top-0 left-0 origin-top-left pointer-events-none select-none"
-        style={{ width: '390px', transform: `scale(${THUMB_SCALE})` }}
+        style={{ width: '383px', transform: `scale(${THUMB_SCALE})` }}
       >
         <TemplateRenderer event={event} disableEffects />
       </div>

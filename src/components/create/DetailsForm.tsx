@@ -17,6 +17,7 @@ interface DetailsFormProps {
   form: CreateFormState
   onChange: (form: CreateFormState) => void
   onBack: () => void
+  onNext: () => void
   onSubmit: () => void
   submitting: boolean
 }
@@ -25,6 +26,7 @@ export function DetailsForm({
   form,
   onChange,
   onBack,
+  onNext,
   onSubmit,
   submitting,
 }: DetailsFormProps) {
@@ -148,7 +150,7 @@ export function DetailsForm({
             </div>
           </div>
 
-          {/* 6. Submit + Back */}
+          {/* 6. Actions */}
           <div className="flex gap-3 mt-8">
             <Button
               variant="ghost"
@@ -160,13 +162,20 @@ export function DetailsForm({
             <Button
               className="flex-1 justify-center gap-2"
               size="lg"
-              onClick={onSubmit}
+              onClick={onNext}
               disabled={!form.title.trim() || !form.date}
-              loading={submitting}
             >
-              Create My Invite →
+              Next: Customize →
             </Button>
           </div>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={!form.title.trim() || !form.date || submitting}
+            className="mt-3 w-full text-sm text-ink-muted hover:text-ink text-center py-2 transition-colors disabled:opacity-40 cursor-pointer"
+          >
+            {submitting ? 'Creating…' : 'Skip & Create Invite'}
+          </button>
         </div>
 
         {/* Right column: live preview — desktop only */}

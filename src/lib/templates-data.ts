@@ -66,12 +66,14 @@ export interface TemplateProps {
     companyName?: string
     hostName?: string
     message?: string
+    sections: Record<import('@/lib/dummy-data').TemplateSectionKey, boolean>
   }
   branding: {
     showDawatBranding: boolean
   }
   onRsvpSubmit: (data: RSVPFormData) => void
   colors?: ColorScheme
+  disableEffects?: boolean
 }
 
 export const TEMPLATE_CONFIGS: TemplateConfig[] = [

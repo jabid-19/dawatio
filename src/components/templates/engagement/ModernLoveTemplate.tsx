@@ -6,33 +6,48 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const MODERNLOVE_DEFAULTS = {
+  bg: '#FFFFFF',
+  primary: '#C9622F',
+  secondary: '#3D6B4F',
+  text: '#1A1A1A',
+  muted: '#888888',
+  surface: '#F8F8F5',
+  border: '#E5E5E0',
+}
 
 const fontDisplay = { fontFamily: 'var(--font-syne, "Syne", sans-serif)' }
 const fontBody = { fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }
 
-export default function ModernLoveTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function ModernLoveTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, MODERNLOVE_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FFFFFF',
-    terracotta: colors?.primary ?? '#C9622F',
-    sage: colors?.secondary ?? '#3D6B4F',
-    text: colors?.text ?? '#1A1A1A',
-    muted: colors?.muted ?? '#888888',
-    light: colors?.surface ?? '#F8F8F5',
-    border: '#E5E5E0',
+    bg: raw.bg,
+    terracotta: raw.primary,
+    sage: raw.secondary,
+    text: raw.text,
+    muted: raw.muted,
+    light: raw.surface,
+    border: raw.border,
   }
 
-  const { coupleNames, title, eventDate, subEvents, description, gallery } = event
+  const { coupleNames, title, eventDate, subEvents, description, gallery, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.engagement
   const name1 = coupleNames?.partner1 ?? title.split('&')[0]?.trim() ?? 'Partner 1'
   const name2 = coupleNames?.partner2 ?? title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2'
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. SPLIT HERO ────────────────────────────────────────────── */}
-      <section className="min-h-screen grid grid-cols-1 md:grid-cols-3">
+      <section className="min-h-screen grid grid-cols-1 @md:grid-cols-3">
         {/* Partner 1 */}
         <motion.div
           initial={{ opacity: 0, x: -60 }}
@@ -52,8 +67,8 @@ export default function ModernLoveTemplate({ event, branding, onRsvpSubmit, colo
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.8 }}
-          className="flex flex-col items-center justify-center py-12 px-6 text-center"
-          style={{ background: C.bg, borderLeft: `1px solid ${C.border}`, borderRight: `1px solid ${C.border}` }}
+          className="flex flex-col items-center justify-center py-12 px-6 text-center border-y @md:border-y-0 @md:border-x"
+          style={{ background: C.bg, borderColor: C.border }}
         >
           <p style={{ ...fontDisplay, color: C.terracotta }} className="text-6xl font-black">
             ♥
@@ -84,34 +99,38 @@ export default function ModernLoveTemplate({ event, branding, onRsvpSubmit, colo
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.light, borderTop: `1px solid ${C.border}` }}>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.bg, number: C.terracotta, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.light, borderTop: `1px solid ${C.border}` }}>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.bg, number: C.terracotta, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. STORY ─────────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Our Story</p>
-          <div className="h-px w-12 mb-6" style={{ background: C.terracotta }} />
-          <p className="text-base leading-relaxed" style={{ color: C.muted }}>
-            {description || 'Two people, one extraordinary connection. We fell in love and now we\'re taking the next step. Join us as we celebrate this wonderful chapter.'}
-          </p>
-        </motion.div>
-      </section>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <p className="text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Our Story</p>
+            <div className="h-px w-12 mb-6" style={{ background: C.terracotta }} />
+            <p className="text-base leading-relaxed" style={{ color: C.muted }}>
+              {description || 'Two people, one extraordinary connection. We fell in love and now we\'re taking the next step. Join us as we celebrate this wonderful chapter.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16" style={{ background: C.light }}
+          className="px-4 @sm:px-8 py-16" style={{ background: C.light }}
         >
           <div className="max-w-4xl mx-auto">
             <motion.h2 variants={staggerItem} style={{ ...fontDisplay }}
               className="text-3xl font-black mb-8">Events</motion.h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 @lg:grid-cols-3 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div key={se.id} variants={staggerItem}
                   className="rounded-xl p-5"
@@ -130,23 +149,30 @@ export default function ModernLoveTemplate({ event, branding, onRsvpSubmit, colo
       )}
 
       {/* ── 5. GALLERY ───────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16 max-w-4xl mx-auto">
-        <Gallery images={gallery} variant="grid" columns={3}
-          colors={{ overlay: `rgba(201, 98, 47, 0.2)` }} />
-      </section>
+      {sections.gallery !== false && (
+        <section className="px-4 @sm:px-8 py-16 max-w-4xl mx-auto">
+          <div className="w-48 mx-auto mb-10">
+            <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="circle" />
+          </div>
+          <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="grid" columns={3}
+            colors={{ overlay: `rgba(201, 98, 47, 0.2)` }} />
+        </section>
+      )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.light }}>
-        <div className="max-w-lg mx-auto">
-          <h2 style={{ ...fontDisplay }} className="text-3xl font-black mb-8">RSVP</h2>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.terracotta, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.sage }}
-            inputStyle="underline" successMessage="See you there!" />
-        </div>
-      </section>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16" style={{ background: C.light }}>
+          <div className="max-w-lg mx-auto">
+            <h2 style={{ ...fontDisplay }} className="text-3xl font-black mb-8">RSVP</h2>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.terracotta, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.sage }}
+              inputStyle="underline" successMessage="See you there!" />
+          </div>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
-      <footer className="px-4 py-8 flex items-center justify-between" style={{ borderTop: `1px solid ${C.border}` }}>
+      <footer className="px-4 py-8 flex items-center justify-between gap-2 flex-wrap" style={{ borderTop: `1px solid ${C.border}` }}>
         <p style={{ ...fontDisplay }} className="font-black">{name1} & {name2}</p>
         <DawatBranding show={branding.showDawatBranding} colors={{ text: C.muted }} />
       </footer>

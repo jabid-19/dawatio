@@ -8,6 +8,21 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
+
+const LANTERN_DEFAULTS = {
+  bg: '#F5F9F9',
+  primary: '#1A6B6B',
+  surface: '#E0F0F0',
+  secondary: '#D4841A',
+  text: '#1A2E2E',
+  muted: '#5A7A7A',
+  amberLight: '#FDF0DC',
+  card: '#FFFFFF',
+  border: '#C5DFE0',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-playfair, "Playfair Display", serif)' }
 const fontBody = { fontFamily: 'var(--font-dm-sans, "DM Sans", sans-serif)' }
@@ -20,14 +35,14 @@ const LANTERNS = [
   { x: '88%', delay: '2s', dur: '4s', scale: 0.7 },
 ]
 
-function Lantern({ x, delay, dur, scale, amber, teal, amberLight }: {
+function Lantern({ x, delay, dur, scale, amber, teal, amberLight, disableEffects }: {
   x: string; delay: string; dur: string; scale: number;
-  amber: string; teal: string; amberLight: string
+  amber: string; teal: string; amberLight: string; disableEffects?: boolean
 }) {
   return (
     <div
       className="absolute pointer-events-none"
-      style={{ left: x, top: -20, animation: `lantern-float ${dur} ease-in-out ${delay} infinite` }}
+      style={{ left: x, top: -20, animation: disableEffects ? undefined : `lantern-float ${dur} ease-in-out ${delay} infinite` }}
     >
       <svg viewBox="0 0 30 50" style={{ width: 30 * scale, height: 50 * scale }} fill="none">
         {/* String */}
@@ -61,27 +76,25 @@ function GlowDivider({ amber }: { amber: string }) {
   )
 }
 
-export default function LanternTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function LanternTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const resolved = resolveColors(colors, LANTERN_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#F5F9F9',
-    teal: colors?.primary ?? '#1A6B6B',
-    tealLight: colors?.surface ?? '#E0F0F0',
-    amber: colors?.secondary ?? '#D4841A',
-    amberLight: '#FDF0DC',
-    text: colors?.text ?? '#1A2E2E',
-    muted: colors?.muted ?? '#5A7A7A',
-    card: '#FFFFFF',
-    border: '#C5DFE0',
+    ...resolved,
+    teal: resolved.primary,
+    tealLight: resolved.surface,
+    amber: resolved.secondary,
+    amberLight: resolved.amberLight,
   }
 
-  const { title, eventDate, subEvents, description, hostName, message } = event
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
-      <style>{`
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
+      {!disableEffects && <style>{`
         @keyframes lantern-float { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(8px) rotate(3deg); } }
         @keyframes lantern-glow { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
-      `}</style>
+      `}</style>}
 
       {/* ── 1. HERO ──────────────────────────────────────────────────── */}
       <section
@@ -90,7 +103,7 @@ export default function LanternTemplate({ event, branding, onRsvpSubmit, colors 
       >
         {/* Floating lanterns */}
         {LANTERNS.map((l, i) => (
-          <Lantern key={i} {...l} amber={C.amber} teal={C.teal} amberLight={C.amberLight} />
+          <Lantern key={i} {...l} amber={C.amber} teal={C.teal} amberLight={C.amberLight} disableEffects={disableEffects} />
         ))}
 
         {/* Glow */}
@@ -113,7 +126,7 @@ export default function LanternTemplate({ event, branding, onRsvpSubmit, colors 
             <span style={{ color: C.amber }}>☽</span>
             <div className="h-px flex-1" style={{ background: `${C.amberLight}60` }} />
           </div>
-          <h1 style={{ ...fontDisplay, color: '#FFFFFF' }} className="text-5xl sm:text-7xl leading-tight mb-4">
+          <h1 style={{ ...fontDisplay, color: '#FFFFFF' }} className="text-5xl @sm:text-7xl leading-tight mb-4">
             {title}
           </h1>
           <p style={{ ...fontDisplay, color: C.amber }} className="text-2xl italic">
@@ -131,29 +144,38 @@ export default function LanternTemplate({ event, branding, onRsvpSubmit, colors 
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.amberLight }}>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.card, number: C.amber, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.amberLight }}>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.card, number: C.amber, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <GlowDivider amber={C.amber} />
-          <p style={{ ...fontDisplay, color: C.text }} className="text-2xl mt-6 leading-relaxed">
-            {message || description || 'As the lights of Eid illuminate the night sky, we invite you to celebrate with warmth, joy, and gratitude. May this occasion strengthen the bonds that unite us.'}
-          </p>
-          <GlowDivider amber={C.amber} />
-        </motion.div>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <GlowDivider amber={C.amber} />
+            <p style={{ ...fontDisplay, color: C.text }} className="text-2xl mt-6 leading-relaxed">
+              {message || description || 'As the lights of Eid illuminate the night sky, we invite you to celebrate with warmth, joy, and gratitude. May this occasion strengthen the bonds that unite us.'}
+            </p>
+            <GlowDivider amber={C.amber} />
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.LanternTemplate} alt={title} shape="landscape" />
       </section>
 
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.tealLight }}
         >
           <div className="max-w-3xl mx-auto">
@@ -161,7 +183,7 @@ export default function LanternTemplate({ event, branding, onRsvpSubmit, colors 
               <GlowDivider amber={C.amber} />
               <h2 style={{ ...fontDisplay, color: C.teal }} className="text-3xl mt-4">Programme</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div
                   key={se.id}
@@ -182,15 +204,17 @@ export default function LanternTemplate({ event, branding, onRsvpSubmit, colors 
       )}
 
       {/* ── 5. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto text-center">
-          <GlowDivider amber={C.amber} />
-          <h2 style={{ ...fontDisplay, color: C.teal }} className="text-3xl mt-4 mb-8">Kindly RSVP</h2>
-          <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-            colors={{ button: C.teal, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.amber }}
-            successMessage="Eid Mubarak! We look forward to celebrating with you 🌙" />
-        </div>
-      </section>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto text-center">
+            <GlowDivider amber={C.amber} />
+            <h2 style={{ ...fontDisplay, color: C.teal }} className="text-3xl mt-4 mb-8">Kindly RSVP</h2>
+            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+              colors={{ button: C.teal, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.amber }}
+              successMessage="Eid Mubarak! We look forward to celebrating with you 🌙" />
+          </div>
+        </section>
+      )}
 
       {/* ── 6. FOOTER ────────────────────────────────────────────────── */}
       <footer

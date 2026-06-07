@@ -74,12 +74,12 @@ export default function CountdownTimer({
 
   if (boxStyle === 'large') {
     return (
-      <div className={`flex flex-wrap justify-center gap-6 md:gap-12 ${className}`}>
+      <div className={`flex flex-wrap justify-center gap-6 @md:gap-12 ${className}`}>
         {units.map((u) => (
           <div key={u.label} className="text-center">
             <div
               style={{ color: colors.number, fontVariantNumeric: 'tabular-nums' }}
-              className="text-7xl md:text-9xl font-bold leading-none"
+              className="text-7xl @md:text-9xl font-bold leading-none"
             >
               {String(u.value).padStart(2, '0')}
             </div>
@@ -93,7 +93,7 @@ export default function CountdownTimer({
   }
 
   return (
-    <div className={`grid grid-cols-2 sm:grid-cols-4 gap-3 ${className}`}>
+    <div className={`grid grid-cols-2 @sm:grid-cols-4 gap-3 ${className}`}>
       {units.map((u) => (
         <div
           key={u.label}
@@ -107,7 +107,7 @@ export default function CountdownTimer({
         >
           <span
             style={{ color: colors.number, fontVariantNumeric: 'tabular-nums' }}
-            className="text-3xl md:text-4xl font-bold leading-none"
+            className="text-3xl @md:text-4xl font-bold leading-none"
           >
             {String(u.value).padStart(2, '0')}
           </span>

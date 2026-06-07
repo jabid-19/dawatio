@@ -3,10 +3,13 @@
 import { motion } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import type { TemplateProps } from '@/lib/templates-data'
+import { resolveColors } from '@/lib/template-colors'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
 
@@ -26,20 +29,24 @@ function RoseGoldRule({ rose, gold }: { rose: string; gold: string }) {
   )
 }
 
-export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = {
-    bg: colors?.bg ?? '#FBF5F8',
-    rose: colors?.primary ?? '#9B3A5A',
-    roseLight: colors?.surface ?? '#F5E0E8',
-    gold: colors?.secondary ?? '#C9A84C',
-    goldLight: '#F5EDD0',
-    text: colors?.text ?? '#2E1020',
-    muted: colors?.muted ?? '#8A6070',
-    card: '#FFFFFF',
-    border: '#EDD0DC',
-  }
+const ANNIVERSARY_DEFAULTS = {
+  bg: '#FBF5F8',
+  primary: '#9B3A5A',
+  surface: '#F5E0E8',
+  secondary: '#C9A84C',
+  goldLight: '#F5EDD0',
+  text: '#2E1020',
+  muted: '#8A6070',
+  card: '#FFFFFF',
+  border: '#EDD0DC',
+}
 
-  const { coupleNames, title, eventDate, subEvents, description, gallery, message } = event
+export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const { bg, primary: rose, surface: roseLight, secondary: gold, goldLight, text, muted, card, border } = resolveColors(colors, ANNIVERSARY_DEFAULTS)
+  const C = { bg, rose, roseLight, gold, goldLight, text, muted, card, border }
+
+  const { coupleNames, title, eventDate, subEvents, description, gallery, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.anniversary
   const name1 = coupleNames?.partner1 ?? title.split('&')[0]?.trim() ?? 'Partner 1'
   const name2 = coupleNames?.partner2 ?? title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2'
 
@@ -48,7 +55,7 @@ export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, col
   const years = yearMatch ? yearMatch[1] : null
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. ROMANTIC HERO ─────────────────────────────────────────── */}
       <section
@@ -73,11 +80,11 @@ export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, col
             Celebrating love
           </p>
           <RoseGoldRule rose={C.rose} gold={C.gold} />
-          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl sm:text-7xl mt-4 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl @sm:text-7xl mt-4 leading-tight">
             {name1}
           </h1>
           <p style={{ ...fontDisplay, color: C.rose }} className="text-4xl italic my-2">&</p>
-          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl sm:text-7xl leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl @sm:text-7xl leading-tight">
             {name2}
           </h1>
           <RoseGoldRule rose={C.rose} gold={C.gold} />
@@ -91,50 +98,59 @@ export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, col
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.rose }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: `${C.goldLight}AA` }}>
-            Until Our Celebration
-          </p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: `${C.rose}AA`, number: C.gold, label: `${C.goldLight}80`, border: `${C.gold}30` }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.rose }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: `${C.goldLight}AA` }}>
+              Until Our Celebration
+            </p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: `${C.rose}AA`, number: C.gold, label: `${C.goldLight}80`, border: `${C.gold}30` }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. STORY ─────────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <RoseGoldRule rose={C.rose} gold={C.gold} />
-          <p style={{ ...fontDisplay, color: C.text }} className="text-2xl italic mt-6 leading-relaxed">
-            {message || description || `Every year together has been a gift. ${years ? `${years} years` : 'These years'} of laughter, love, and growth — and we're only just beginning. Join us as we celebrate the journey and look forward to all that lies ahead.`}
-          </p>
-        </motion.div>
-      </section>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <RoseGoldRule rose={C.rose} gold={C.gold} />
+            <p style={{ ...fontDisplay, color: C.text }} className="text-2xl italic mt-6 leading-relaxed">
+              {message || description || `Every year together has been a gift. ${years ? `${years} years` : 'These years'} of laughter, love, and growth — and we're only just beginning. Join us as we celebrate the journey and look forward to all that lies ahead.`}
+            </p>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── 4. GALLERY ───────────────────────────────────────────────── */}
-      {gallery && gallery.length > 0 && (
-        <section className="px-4 sm:px-8 py-16" style={{ background: C.roseLight }}>
+      <section className="px-4 @sm:px-8 py-10 max-w-4xl mx-auto">
+        <div className="w-48 mx-auto">
+          <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="circle" />
+        </div>
+      </section>
+      {sections.gallery !== false && gallery && gallery.length > 0 && (
+        <section className="px-4 @sm:px-8 py-16" style={{ background: C.roseLight }}>
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-6">
               <p className="text-xs uppercase tracking-widest" style={{ color: C.muted }}>Through the Years</p>
             </div>
-            <Gallery images={gallery} variant="grid" columns={3}
+            <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="grid" columns={3}
               colors={{ overlay: `${C.rose}22`, border: C.border }} />
           </div>
         </section>
       )}
 
       {/* ── 5. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16 max-w-3xl mx-auto"
+          className="px-4 @sm:px-8 py-16 max-w-3xl mx-auto"
         >
           <div className="text-center mb-8">
             <RoseGoldRule rose={C.rose} gold={C.gold} />
             <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl mt-4">Celebrate With Us</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
             {subEvents.map((se) => (
               <motion.div
                 key={se.id}
@@ -154,20 +170,22 @@ export default function AnniversaryTemplate({ event, branding, onRsvpSubmit, col
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.goldLight }}>
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <RoseGoldRule rose={C.rose} gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl mt-4">Join Our Celebration</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16" style={{ background: C.goldLight }}>
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <RoseGoldRule rose={C.rose} gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl mt-4">Join Our Celebration</h2>
+            </div>
+            <div className="rounded-3xl p-6 @sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+              <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+                colors={{ button: C.rose, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
+                inputStyle="underline"
+                successMessage="We're so glad you'll be celebrating with us! ❤️" />
+            </div>
           </div>
-          <div className="rounded-3xl p-6 sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-              colors={{ button: C.rose, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.gold }}
-              inputStyle="underline"
-              successMessage="We're so glad you'll be celebrating with us! ❤️" />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.border}` }}>

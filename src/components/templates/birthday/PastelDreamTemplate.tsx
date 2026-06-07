@@ -5,51 +5,73 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const PASTEL_DEFAULTS = {
+  bg: '#FFF9FB',
+  primary: '#F8B4D9',
+  secondary: '#FFD4B8',
+  surface: '#D4B8FF',
+  text: '#4A4A4A',
+  muted: '#9A9A9A',
+  // template-specific extras
+  mint: '#B8E8D0',
+  white: '#FFFFFF',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-josefin, "Josefin Sans", sans-serif)' }
 const fontBody = { fontFamily: 'var(--font-poppins, "Poppins", sans-serif)' }
 
-function FloatingBubble({ style }: { style?: React.CSSProperties }) {
+function FloatingBubble({ style, disableEffects }: { style?: React.CSSProperties; disableEffects?: boolean }) {
   return (
     <div
       className="absolute rounded-full pointer-events-none opacity-30"
-      style={{ animation: 'pastel-float 6s ease-in-out infinite', ...style }}
+      style={{
+        animation: disableEffects ? undefined : 'pastel-float 6s ease-in-out infinite',
+        ...style,
+      }}
     />
   )
 }
 
-export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, PASTEL_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FFF9FB',
-    pink: colors?.primary ?? '#F8B4D9',
-    peach: colors?.secondary ?? '#FFD4B8',
-    mint: colors?.secondary ?? '#B8E8D0',
-    lavender: colors?.surface ?? '#D4B8FF',
-    text: colors?.text ?? '#4A4A4A',
-    muted: colors?.muted ?? '#9A9A9A',
-    white: '#FFFFFF',
+    bg: raw.bg,
+    pink: raw.primary,
+    peach: raw.secondary,
+    mint: raw.mint,
+    lavender: raw.surface,
+    text: raw.text,
+    muted: raw.muted,
+    white: raw.white,
   }
 
   const BUBBLE_COLORS = [C.pink, C.peach, C.mint, C.lavender, C.pink, C.mint, C.peach, C.lavender, C.mint, C.pink]
 
-  const { personName, title, eventDate, subEvents, description, gallery } = event
+  const { personName, title, eventDate, subEvents, description, gallery, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.birthday
   const name = personName ?? title.split("'s")[0] ?? 'The Birthday Star'
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
-      <style>{`
-        @keyframes pastel-float {
-          0%, 100% { transform: translateY(0) scale(1); }
-          50% { transform: translateY(-20px) scale(1.05); }
-        }
-        @keyframes pastel-sway {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
+      {!disableEffects && (
+        <style>{`
+          @keyframes pastel-float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+          }
+          @keyframes pastel-sway {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+          }
+        `}</style>
+      )}
 
       {/* ── 1. DREAMY HERO ───────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden">
@@ -64,6 +86,7 @@ export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, col
         {BUBBLE_COLORS.slice(0, 8).map((color, i) => (
           <FloatingBubble
             key={i}
+            disableEffects={disableEffects}
             style={{
               background: color,
               width: 40 + (i * 12) % 60,
@@ -85,10 +108,10 @@ export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, col
           <p style={{ ...fontDisplay, color: C.muted }} className="text-sm uppercase tracking-widest mb-3">
             You&apos;re invited to
           </p>
-          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl sm:text-6xl font-bold leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl @sm:text-6xl font-bold leading-tight">
             {name}
           </h1>
-          <p style={{ ...fontDisplay, color: C.pink }} className="text-2xl sm:text-3xl mt-2">
+          <p style={{ ...fontDisplay, color: C.pink }} className="text-2xl @sm:text-3xl mt-2">
             Birthday Celebration ✨
           </p>
 
@@ -109,26 +132,28 @@ export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, col
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-14">
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer
-            targetDate={eventDate}
-            boxStyle="boxed"
-            colors={{ box: C.pink, number: '#FFFFFF', label: '#FFE8F4', border: 'transparent' }}
-          />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-14">
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer
+              targetDate={eventDate}
+              boxStyle="boxed"
+              colors={{ box: C.pink, number: '#FFFFFF', label: '#FFE8F4', border: 'transparent' }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. WISHES NOTE ───────────────────────────────────────────── */}
-      {description && (
+      {sections.about !== false && description && (
         <motion.section
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewport}
-          className="px-4 sm:px-8 py-14 max-w-2xl mx-auto"
+          className="px-4 @sm:px-8 py-14 max-w-2xl mx-auto"
         >
           <div
-            className="rounded-3xl p-8 text-center relative"
+            className="rounded-3xl p-5 @sm:p-8 text-center relative"
             style={{ background: C.pink, color: C.text }}
           >
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full" style={{ background: C.pink }} />
@@ -140,17 +165,22 @@ export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, col
       )}
 
       {/* ── 4. GALLERY POLAROIDS ─────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-14 max-w-4xl mx-auto">
-        <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl font-bold text-center mb-10">
-          Sweet Memories 📸
-        </h2>
-        <Gallery images={gallery} variant="polaroid" />
-      </section>
+      {sections.gallery !== false && (
+        <section className="px-4 @sm:px-8 py-14 max-w-4xl mx-auto">
+          <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl font-bold text-center mb-10">
+            Sweet Memories 📸
+          </h2>
+          <div className="max-w-xs mx-auto mb-10">
+            <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="portrait" />
+          </div>
+          <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="polaroid" />
+        </section>
+      )}
 
       {/* ── 5. DETAILS ───────────────────────────────────────────────── */}
       {subEvents[0] && (
-        <section className="px-4 sm:px-8 py-14" style={{ background: C.mint + '40' }}>
-          <div className="max-w-md mx-auto rounded-3xl p-6 sm:p-8" style={{ background: C.white }}>
+        <section className="px-4 @sm:px-8 py-14" style={{ background: C.mint + '40' }}>
+          <div className="max-w-md mx-auto rounded-3xl p-6 @sm:p-8" style={{ background: C.white }}>
             <h3 style={{ ...fontDisplay, color: C.text }} className="text-2xl font-bold mb-4">Party Details</h3>
             {subEvents.map((se) => (
               <div key={se.id} className="py-3" style={{ borderBottom: `1px solid ${C.lavender}` }}>
@@ -164,30 +194,32 @@ export default function PastelDreamTemplate({ event, branding, onRsvpSubmit, col
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto">
-          <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl font-bold text-center mb-8">
-            Can You Come? 🌸
-          </h2>
-          <div
-            className="rounded-3xl p-6 sm:p-8"
-            style={{ background: C.white, border: `2px solid ${C.lavender}` }}
-          >
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{
-                button: `linear-gradient(135deg, ${C.pink}, ${C.peach})`,
-                buttonText: '#FFFFFF',
-                label: C.text,
-                checkboxAccent: C.lavender,
-              }}
-              inputStyle="bordered"
-              successMessage="Wonderful! We can't wait to celebrate with you! ✨"
-            />
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto">
+            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl font-bold text-center mb-8">
+              Can You Come? 🌸
+            </h2>
+            <div
+              className="rounded-3xl p-6 @sm:p-8"
+              style={{ background: C.white, border: `2px solid ${C.lavender}` }}
+            >
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{
+                  button: `linear-gradient(135deg, ${C.pink}, ${C.peach})`,
+                  buttonText: '#FFFFFF',
+                  label: C.text,
+                  checkboxAccent: C.lavender,
+                }}
+                inputStyle="bordered"
+                successMessage="Wonderful! We can't wait to celebrate with you! ✨"
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-8 text-center">

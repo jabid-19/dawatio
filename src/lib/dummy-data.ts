@@ -63,6 +63,11 @@ export interface DawatEvent {
   colorScheme?: number
   description?: string
   templateContent?: TemplateContent
+  coupleNames?: { partner1: string; partner2: string }
+  personName?: string
+  companyName?: string
+  hostName?: string
+  message?: string
 }
 
 export const DUMMY_EVENTS: DawatEvent[] = [

@@ -5,9 +5,23 @@ import { MapPin, Users, Calendar, Clock } from 'lucide-react'
 import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const SUMMIT_DEFAULTS = {
+  bg: '#FAFAFA',
+  surface: '#0D0D0D',
+  primary: '#3B82F6',
+  secondary: '#00C2FF',
+  text: '#0D0D0D',
+  muted: '#6B7280',
+  border: '#E5E7EB',
+  card: '#FFFFFF',
+}
 
 const fontDisplay = { fontFamily: 'var(--font-syne, "Syne", sans-serif)' }
 const fontBody = { fontFamily: 'var(--font-inter, "Inter", sans-serif)' }
@@ -28,27 +42,29 @@ const SPEAKERS = [
 
 const SPONSORS = Array.from({ length: 6 }, (_, i) => `Sponsor ${i + 1}`)
 
-export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function SummitTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, SUMMIT_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FAFAFA',
-    dark: colors?.surface ?? '#0D0D0D',
-    blue: colors?.primary ?? '#3B82F6',
-    electric: colors?.secondary ?? '#00C2FF',
-    text: colors?.text ?? '#0D0D0D',
+    bg: raw.bg,
+    dark: raw.surface,
+    blue: raw.primary,
+    electric: raw.secondary,
+    text: raw.text,
     textLight: '#FAFAFA',
-    muted: colors?.muted ?? '#6B7280',
-    border: '#E5E7EB',
-    card: '#FFFFFF',
+    muted: raw.muted,
+    border: raw.border,
+    card: raw.card,
   }
 
-  const { title, eventDate, subEvents, description } = event
+  const { title, eventDate, subEvents, description, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.corporate
   const firstSub = subEvents[0]
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. SUMMIT HERO (dark) ─────────────────────────────────────── */}
-      <section className="relative min-h-[85vh] flex flex-col items-start justify-end px-6 sm:px-12 md:px-16 pb-16 overflow-hidden"
+      <section className="relative min-h-[85vh] flex flex-col items-start justify-end px-6 @sm:px-12 @md:px-16 pb-16 overflow-hidden"
         style={{ background: C.dark }}>
         {/* Geometric background */}
         <div className="absolute inset-0 pointer-events-none opacity-[0.04]"
@@ -70,7 +86,7 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
           <p className="text-xs uppercase tracking-[0.4em] mb-4" style={{ color: C.electric }}>
             {firstSub?.date}
           </p>
-          <h1 style={{ ...fontDisplay }} className="text-4xl sm:text-6xl md:text-7xl font-black leading-none mb-6">
+          <h1 style={{ ...fontDisplay }} className="text-4xl @sm:text-5xl @md:text-6xl @lg:text-7xl font-black leading-none mb-6">
             {title}
           </h1>
           <p className="text-base max-w-xl" style={{ color: '#9CA3AF' }}>
@@ -89,7 +105,7 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
 
       {/* ── 2. STATS BAR ─────────────────────────────────────────────── */}
       <div className="px-6 py-6" style={{ background: C.blue }}>
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 @sm:grid-cols-4 gap-4">
           {STATS.map((s) => (
             <div key={s.label} className="text-center">
               <motion.p
@@ -108,24 +124,26 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
       </div>
 
       {/* ── 3. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.dark }}>
-        <p className="text-center text-xs uppercase tracking-widest mb-6" style={{ color: C.muted }}>
-          Event starts in
-        </p>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer
-            targetDate={eventDate}
-            boxStyle="boxed"
-            colors={{ box: '#1F1F1F', number: C.electric, label: C.muted, border: '#2A2A2A' }}
-          />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.dark }}>
+          <p className="text-center text-xs uppercase tracking-widest mb-6" style={{ color: C.muted }}>
+            Event starts in
+          </p>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer
+              targetDate={eventDate}
+              boxStyle="boxed"
+              colors={{ box: '#1F1F1F', number: C.electric, label: C.muted, border: '#2A2A2A' }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* ── 4. SPEAKERS ──────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 md:px-16 py-20">
+      <section className="px-4 @sm:px-8 @md:px-16 py-20">
         <div className="max-w-4xl mx-auto">
           <h2 style={{ ...fontDisplay }} className="text-3xl font-black mb-12">Featured Speakers</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 @sm:grid-cols-2 gap-6">
             {SPEAKERS.map((sp) => (
               <motion.div
                 key={sp.name}
@@ -152,16 +170,21 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
         </div>
       </section>
 
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 @md:px-16 py-8 max-w-4xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
+      </section>
+
       {/* ── 5. SCHEDULE ──────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
-        <section className="px-4 sm:px-8 md:px-16 py-16" style={{ background: C.bg }}>
+      {sections.schedule !== false && subEvents.length > 0 && (
+        <section className="px-4 @sm:px-8 @md:px-16 py-16" style={{ background: C.bg }}>
           <div className="max-w-4xl mx-auto">
             <h2 style={{ ...fontDisplay }} className="text-3xl font-black mb-8">Schedule</h2>
             <div className="flex flex-col gap-2">
               {subEvents.map((se) => (
                 <div
                   key={se.id}
-                  className="flex gap-4 sm:gap-8 items-start py-4 px-6 rounded-xl"
+                  className="flex gap-4 @sm:gap-8 items-start py-4 px-6 rounded-xl"
                   style={{ borderLeft: `4px solid ${C.blue}`, background: C.card }}
                 >
                   <p className="text-sm font-semibold w-20 shrink-0" style={{ color: C.blue }}>{se.time}</p>
@@ -177,12 +200,12 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
       )}
 
       {/* ── 6. SPONSORS ──────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 md:px-16 py-12" style={{ background: '#F3F4F6' }}>
+      <section className="px-4 @sm:px-8 @md:px-16 py-12" style={{ background: '#F3F4F6' }}>
         <div className="max-w-4xl mx-auto">
           <p className="text-xs uppercase tracking-widest text-center mb-8" style={{ color: C.muted }}>
             Sponsored By
           </p>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 @sm:grid-cols-6 gap-4">
             {SPONSORS.map((s) => (
               <div
                 key={s}
@@ -197,25 +220,27 @@ export default function SummitTemplate({ event, branding, onRsvpSubmit, colors }
       </section>
 
       {/* ── 7. RSVP (dark) ───────────────────────────────────────────── */}
-      <section id="rsvp" className="px-4 sm:px-8 md:px-16 py-20" style={{ background: C.dark }}>
-        <div className="max-w-lg mx-auto">
-          <h2 style={{ ...fontDisplay, color: C.textLight }} className="text-3xl font-black mb-8">
-            Get Your Pass
-          </h2>
-          <div
-            className="rounded-2xl p-6 sm:p-8"
-            style={{ background: C.card }}
-          >
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{ button: C.electric, buttonText: C.dark, label: C.text, checkboxAccent: C.electric }}
-              inputStyle="bordered"
-              successMessage="You're confirmed! See you at the summit."
-            />
+      {sections.rsvp !== false && (
+        <section id="rsvp" className="px-4 @sm:px-8 @md:px-16 py-20" style={{ background: C.dark }}>
+          <div className="max-w-lg mx-auto">
+            <h2 style={{ ...fontDisplay, color: C.textLight }} className="text-3xl font-black mb-8">
+              Get Your Pass
+            </h2>
+            <div
+              className="rounded-2xl p-6 @sm:p-8"
+              style={{ background: C.card }}
+            >
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{ button: C.electric, buttonText: C.dark, label: C.text, checkboxAccent: C.electric }}
+                inputStyle="bordered"
+                successMessage="You're confirmed! See you at the summit."
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 8. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-8 text-center" style={{ background: C.dark, borderTop: '1px solid #1F1F1F' }}>

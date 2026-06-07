@@ -108,7 +108,7 @@ export default function Templates() {
                   <div className="h-72 relative overflow-hidden bg-white">
                     <div
                       className="absolute top-0 left-0 origin-top-left pointer-events-none select-none"
-                      style={{ width: '390px', transform: `scale(${THUMB_SCALE})` }}
+                      style={{ width: '383px', transform: `scale(${THUMB_SCALE})` }}
                     >
                       <TemplateRenderer event={cardEvent} disableEffects />
                     </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { DawatEvent, EventType, SubEvent } from '@/lib/dummy-data'
+import { DawatEvent, EventType, SubEvent, TemplateContent } from '@/lib/dummy-data'
 import { TemplateRenderer } from '@/lib/template-utils'
 
 export interface CreateFormState {
@@ -15,6 +15,12 @@ export interface CreateFormState {
   colorScheme: number
   coverImage: string | null
   ceremonies: SubEvent[]
+  templateContent: TemplateContent
+  coupleNames?: { partner1: string; partner2: string }
+  personName?: string
+  companyName?: string
+  hostName?: string
+  message?: string
 }
 
 export interface LivePreviewProps {
@@ -22,7 +28,7 @@ export interface LivePreviewProps {
   className?: string
 }
 
-function formToEvent(form: CreateFormState): DawatEvent {
+export function formToEvent(form: CreateFormState): DawatEvent {
   const slug = form.title
     ? form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     : 'preview'
@@ -54,6 +60,12 @@ function formToEvent(form: CreateFormState): DawatEvent {
     template: form.template,
     colorScheme: form.colorScheme,
     description: form.description,
+    templateContent: form.templateContent,
+    coupleNames: form.coupleNames,
+    personName: form.personName,
+    companyName: form.companyName,
+    hostName: form.hostName,
+    message: form.message,
   }
 }
 
@@ -72,21 +84,32 @@ export function LivePreview({ form, className }: LivePreviewProps) {
       form.colorScheme,
       form.coverImage,
       form.ceremonies,
+      form.templateContent,
+      form.coupleNames,
+      form.personName,
+      form.companyName,
+      form.hostName,
+      form.message,
     ]
   )
 
   return (
     <div className={className}>
-      {/* Phone mockup frame */}
-      <div className="max-w-[390px] mx-auto rounded-[2.5rem] overflow-hidden bg-white shadow-[var(--shadow-modal)] ring-2 ring-black/5">
+      {/* Phone mockup frame — 360px keeps @sm: container queries from firing */}
+      <div className="max-w-[360px] mx-auto rounded-[2.5rem] overflow-hidden bg-white shadow-[var(--shadow-modal)] ring-4 ring-black/10 flex flex-col" style={{ height: '700px' }}>
         {/* Status bar */}
-        <div className="h-7 bg-black flex items-center justify-center">
+        <div className="h-7 bg-black flex items-center justify-center shrink-0">
           <div className="w-16 h-1.5 bg-zinc-700 rounded-full" />
         </div>
 
-        {/* Template content */}
-        <div className="max-w-[390px] w-full mx-auto">
+        {/* Template content — scrolls inside the frame */}
+        <div className="flex-1 overflow-y-auto overflow-x-hidden w-full [&::-webkit-scrollbar]:hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
           <TemplateRenderer event={event} disableEffects />
+        </div>
+
+        {/* Home indicator */}
+        <div className="h-5 bg-white flex items-center justify-center shrink-0">
+          <div className="w-24 h-1 bg-black/20 rounded-full" />
         </div>
       </div>
 

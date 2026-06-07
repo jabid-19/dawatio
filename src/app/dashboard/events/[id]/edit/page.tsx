@@ -22,11 +22,13 @@ function SectionToggle({ label, checked, onChange }: { label: string; checked: b
       <p className="text-sm font-semibold text-ink">{label}</p>
       <button
         type="button"
+        role="switch"
+        aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={cn('w-10 h-5 rounded-full transition-colors cursor-pointer relative shrink-0', checked ? 'bg-accent' : 'bg-border')}
+        className={cn('relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200', checked ? 'bg-accent' : 'bg-black/15')}
         aria-label={`${checked ? 'Hide' : 'Show'} ${label}`}
       >
-        <span className={cn('absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform', checked ? 'translate-x-5' : 'translate-x-0.5')} />
+        <span className={cn('pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform duration-200', checked ? 'translate-x-5' : 'translate-x-0')} />
       </button>
     </div>
   )

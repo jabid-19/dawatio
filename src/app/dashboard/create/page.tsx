@@ -11,6 +11,7 @@ import { easeOut } from '@/lib/motion'
 import { useCreateDraft } from '@/lib/useCreateDraft'
 import { TemplateGallery } from '@/components/create/TemplateGallery'
 import { DetailsForm } from '@/components/create/DetailsForm'
+import { CustomizeForm } from '@/components/create/CustomizeForm'
 import { SuccessScreen } from '@/components/create/SuccessScreen'
 import type { CreateFormState } from '@/components/create/LivePreview'
 
@@ -43,13 +44,19 @@ const initialForm: CreateFormState = {
   colorScheme: 1,
   coverImage: null,
   ceremonies: [],
+  templateContent: {},
+  coupleNames: undefined,
+  personName: undefined,
+  companyName: undefined,
+  hostName: undefined,
+  message: undefined,
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function CreatePage() {
   const router = useRouter()
-  const [step, setStep] = useState<1 | 2 | 'success'>(1)
+  const [step, setStep] = useState<1 | 2 | 3 | 'success'>(1)
   const [form, setForm] = useState<CreateFormState>(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [createdEvent, setCreatedEvent] = useState<DawatEvent | null>(null)
@@ -108,6 +115,12 @@ export default function CreatePage() {
       template: form.template,
       colorScheme: form.colorScheme,
       description: form.description,
+      templateContent: form.templateContent,
+      coupleNames: form.coupleNames,
+      personName: form.personName,
+      companyName: form.companyName,
+      hostName: form.hostName,
+      message: form.message,
     }
     addNewEvent(newEvent)
     draftUtils.clearDraft()
@@ -135,16 +148,16 @@ export default function CreatePage() {
             className="text-2xl font-bold text-ink"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
-            {step === 1 ? 'Choose your template' : 'Event details'}
+            {step === 1 ? 'Choose your template' : step === 2 ? 'Event details' : 'Customize'}
           </h1>
           <span className="text-sm text-ink-muted">
-            Step {step === 1 ? 1 : 2} of 2
+            Step {step === 1 ? 1 : step === 2 ? 2 : 3} of 3
           </span>
         </div>
         <div className="h-1 bg-border rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-accent rounded-full"
-            animate={{ width: step === 1 ? '50%' : '100%' }}
+            animate={{ width: step === 1 ? '33%' : step === 2 ? '66%' : '100%' }}
             transition={{ duration: 0.4, ease: easeOut }}
           />
         </div>
@@ -184,6 +197,16 @@ export default function CreatePage() {
               form={form}
               onChange={setForm}
               onBack={() => setStep(1)}
+              onNext={() => setStep(3)}
+              onSubmit={handleCreate}
+              submitting={submitting}
+            />
+          )}
+          {step === 3 && (
+            <CustomizeForm
+              form={form}
+              onChange={setForm}
+              onBack={() => setStep(2)}
               onSubmit={handleCreate}
               submitting={submitting}
             />

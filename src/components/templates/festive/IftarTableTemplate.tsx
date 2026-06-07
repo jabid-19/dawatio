@@ -8,6 +8,20 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
+
+const IFTAR_DEFAULTS = {
+  bg: '#FAF5EE',
+  primary: '#C9622F',
+  secondary: '#D4A84C',
+  surface: '#F5EDE0',
+  text: '#2E1A0A',
+  muted: '#8A6A4A',
+  card: '#FFFFFF',
+  border: '#E8D5C0',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-lora, "Lora", serif)' }
 const fontBody = { fontFamily: 'var(--font-quicksand, "Quicksand", sans-serif)' }
@@ -24,23 +38,21 @@ function WarmDivider({ amber, orange }: { amber: string; orange: string }) {
   )
 }
 
-export default function IftarTableTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function IftarTableTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const resolved = resolveColors(colors, IFTAR_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FAF5EE',
-    orange: colors?.primary ?? '#C9622F',
-    brown: colors?.secondary ?? '#6B3A1A',
-    brownLight: colors?.surface ?? '#F5EDE0',
-    amber: colors?.secondary ?? '#D4A84C',
-    text: colors?.text ?? '#2E1A0A',
-    muted: colors?.muted ?? '#8A6A4A',
-    card: '#FFFFFF',
-    border: '#E8D5C0',
+    ...resolved,
+    orange: resolved.primary,
+    brown: resolved.primary,
+    brownLight: resolved.surface,
+    amber: resolved.secondary,
   }
 
-  const { title, eventDate, subEvents, description, hostName, message } = event
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. HERO ──────────────────────────────────────────────────── */}
       <section
@@ -51,7 +63,7 @@ export default function IftarTableTemplate({ event, branding, onRsvpSubmit, colo
           <p className="text-4xl mb-4">🌙</p>
           <p className="text-xs uppercase tracking-[0.4em] mb-2" style={{ color: C.muted }}>You are warmly invited to</p>
           <WarmDivider amber={C.amber} orange={C.orange} />
-          <h1 style={{ ...fontDisplay, color: C.brown }} className="text-5xl sm:text-7xl leading-tight mt-4 mb-2">
+          <h1 style={{ ...fontDisplay, color: C.brown }} className="text-5xl @sm:text-7xl leading-tight mt-4 mb-2">
             Iftar Dinner
           </h1>
           {title && title !== 'Iftar Dinner' && (
@@ -70,47 +82,56 @@ export default function IftarTableTemplate({ event, branding, onRsvpSubmit, colo
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.orange }}>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: `${C.brown}CC`, number: '#FFFFFF', label: `${C.brownLight}99`, border: `${C.amber}40` }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.orange }}>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: `${C.brown}CC`, number: '#FFFFFF', label: `${C.brownLight}99`, border: `${C.amber}40` }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. THE TABLE ─────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-3xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <p className="text-xs uppercase tracking-widest mb-2" style={{ color: C.muted }}>What's on the table</p>
-          <WarmDivider amber={C.amber} orange={C.orange} />
-          <div className="flex flex-wrap justify-center gap-3 mt-6">
-            {DISHES.map((dish) => (
-              <span
-                key={dish}
-                className="px-4 py-2 rounded-full text-sm font-semibold"
-                style={{ background: C.brownLight, color: C.brown, border: `1px solid ${C.border}` }}
-              >
-                {dish}
-              </span>
-            ))}
-          </div>
-          <p className="text-base leading-relaxed mt-8" style={{ color: C.muted }}>
-            {message || description || 'Join us as we break our fast together around a table filled with warmth, food, and the blessings of Ramadan. Your presence is the greatest gift.'}
-          </p>
-        </motion.div>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-3xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <p className="text-xs uppercase tracking-widest mb-2" style={{ color: C.muted }}>What's on the table</p>
+            <WarmDivider amber={C.amber} orange={C.orange} />
+            <div className="flex flex-wrap justify-center gap-3 mt-6">
+              {DISHES.map((dish) => (
+                <span
+                  key={dish}
+                  className="px-4 py-2 rounded-full text-sm font-semibold"
+                  style={{ background: C.brownLight, color: C.brown, border: `1px solid ${C.border}` }}
+                >
+                  {dish}
+                </span>
+              ))}
+            </div>
+            <p className="text-base leading-relaxed mt-8" style={{ color: C.muted }}>
+              {message || description || 'Join us as we break our fast together around a table filled with warmth, food, and the blessings of Ramadan. Your presence is the greatest gift.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.IftarTableTemplate} alt={title} shape="landscape" />
       </section>
 
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.brownLight }}
         >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
               <h2 style={{ ...fontDisplay, color: C.brown }} className="text-3xl">Programme</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div
                   key={se.id}
@@ -132,19 +153,21 @@ export default function IftarTableTemplate({ event, branding, onRsvpSubmit, colo
       )}
 
       {/* ── 5. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <WarmDivider amber={C.amber} orange={C.orange} />
-            <h2 style={{ ...fontDisplay, color: C.brown }} className="text-3xl mt-4">Will You Join Us?</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <WarmDivider amber={C.amber} orange={C.orange} />
+              <h2 style={{ ...fontDisplay, color: C.brown }} className="text-3xl mt-4">Will You Join Us?</h2>
+            </div>
+            <div className="rounded-2xl p-6 @sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+              <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+                colors={{ button: C.orange, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.amber }}
+                successMessage="Jazak Allah Khair! We'll see you at the table 🌙" />
+            </div>
           </div>
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-              colors={{ button: C.orange, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.amber }}
-              successMessage="Jazak Allah Khair! We'll see you at the table 🌙" />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 6. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.border}` }}>

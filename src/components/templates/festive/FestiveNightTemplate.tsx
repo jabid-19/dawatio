@@ -8,6 +8,19 @@ import RSVPForm from '../shared/RSVPForm'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import CoverPhoto from '../shared/CoverPhoto'
+import { PLACEHOLDER_IMAGES, FESTIVE_COVER_BY_TEMPLATE } from '@/lib/placeholder-images'
+
+const FESTIVE_NIGHT_DEFAULTS = {
+  bg: '#080808',
+  surface: '#111111',
+  primary: '#D4A853',
+  secondary: '#9B1C1C',
+  text: '#F2E6C9',
+  muted: '#7A6A50',
+  border: '#2A2010',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-eb-garamond, "EB Garamond", serif)' }
 const fontBody = { fontFamily: 'var(--font-outfit, "Outfit", sans-serif)' }
@@ -24,16 +37,13 @@ function GoldDiamond({ gold }: { gold: string }) {
   )
 }
 
-export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const resolved = resolveColors(colors, FESTIVE_NIGHT_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#080808',
-    surface: colors?.surface ?? '#111111',
-    gold: colors?.primary ?? '#D4A853',
-    ruby: colors?.secondary ?? '#9B1C1C',
-    champagne: colors?.text ?? '#F2E6C9',
-    text: colors?.text ?? '#F2E6C9',
-    muted: colors?.muted ?? '#7A6A50',
-    border: '#2A2010',
+    ...resolved,
+    gold: resolved.primary,
+    ruby: resolved.secondary,
+    champagne: resolved.text,
   }
 
   const FIREWORKS = [
@@ -44,14 +54,15 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
     { x: '10%', y: '50%', delay: '2.4s', color: C.ruby },
   ]
 
-  const { title, eventDate, subEvents, description, hostName, message } = event
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.festive
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
-      <style>{`
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
+      {!disableEffects && <style>{`
         @keyframes festive-burst { 0% { opacity: 0; transform: scale(0) rotate(0deg); } 30% { opacity: 1; } 100% { opacity: 0; transform: scale(1.5) rotate(360deg); } }
         @keyframes festive-shimmer { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
-      `}</style>
+      `}</style>}
 
       {/* ── 1. GRAND HERO ────────────────────────────────────────────── */}
       <section
@@ -65,7 +76,7 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
             className="absolute pointer-events-none"
             style={{ left: f.x, top: f.y }}
           >
-            <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ animation: `festive-burst 3s ease-out ${f.delay} infinite` }}>
+            <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ animation: disableEffects ? undefined : `festive-burst 3s ease-out ${f.delay} infinite` }}>
               {[0, 45, 90, 135, 180, 225, 270, 315].map((angle) => (
                 <line
                   key={angle}
@@ -95,7 +106,7 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
             A Grand Celebration
           </p>
           <GoldDiamond gold={C.gold} />
-          <h1 style={{ ...fontDisplay, color: C.gold }} className="text-5xl sm:text-7xl md:text-8xl mt-6 mb-2 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.gold }} className="text-5xl @sm:text-7xl @md:text-8xl mt-6 mb-2 leading-tight">
             {title}
           </h1>
           <p style={{ ...fontDisplay, color: C.champagne }} className="text-2xl italic mb-6">
@@ -114,29 +125,38 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
       </section>
 
       {/* ── 2. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.surface }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Until Celebrations Begin</p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.bg, number: C.gold, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.surface }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>Until Celebrations Begin</p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.bg, number: C.gold, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 3. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-12 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <GoldDiamond gold={C.gold} />
-          <p style={{ ...fontDisplay, color: C.champagne }} className="text-2xl italic mt-6 leading-relaxed">
-            {message || description || 'On this blessed night, we gather to celebrate the joy of Eid in grandeur. Your presence will make this occasion truly extraordinary.'}
-          </p>
-        </motion.div>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-12 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <GoldDiamond gold={C.gold} />
+            <p style={{ ...fontDisplay, color: C.champagne }} className="text-2xl italic mt-6 leading-relaxed">
+              {message || description || 'On this blessed night, we gather to celebrate the joy of Eid in grandeur. Your presence will make this occasion truly extraordinary.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={FESTIVE_COVER_BY_TEMPLATE.FestiveNightTemplate} alt={title} shape="landscape" />
       </section>
 
       {/* ── 4. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.surface }}
         >
           <div className="max-w-4xl mx-auto">
@@ -144,7 +164,7 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
               <GoldDiamond gold={C.gold} />
               <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">The Evening</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div
                   key={se.id}
@@ -177,20 +197,22 @@ export default function FestiveNightTemplate({ event, branding, onRsvpSubmit, co
       </section>
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.surface }}>
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-8">
-            <GoldDiamond gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">Will You Attend?</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16" style={{ background: C.surface }}>
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-8">
+              <GoldDiamond gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">Will You Attend?</h2>
+            </div>
+            <div className="rounded-2xl p-6 @sm:p-8" style={{ background: C.bg, border: `1px solid ${C.border}` }}>
+              <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+                colors={{ button: C.gold, buttonText: C.bg, label: C.champagne, checkboxAccent: C.gold, successText: C.champagne }}
+                inputStyle="underline"
+                successMessage="Eid Mubarak! We look forward to celebrating together ✦" />
+            </div>
           </div>
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: C.bg, border: `1px solid ${C.border}` }}>
-            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-              colors={{ button: C.gold, buttonText: C.bg, label: C.champagne, checkboxAccent: C.gold, successText: C.champagne }}
-              inputStyle="underline"
-              successMessage="Eid Mubarak! We look forward to celebrating together ✦" />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.gold}20` }}>

@@ -3,9 +3,22 @@
 import { motion } from 'motion/react'
 import type { TemplateProps } from '@/lib/templates-data'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const GALANIGHT_DEFAULTS = {
+  bg: '#0A0A0A',
+  primary: '#D4A853',
+  secondary: '#F2E6C9',
+  surface: '#1A1A1A',
+  text: '#F2E6C9',
+  muted: '#8A8070',
+  border: '#2A2A2A',
+}
 
 const fontDisplay = { fontFamily: 'var(--font-bodoni, "Bodoni Moda", serif)' }
 const fontBody = { fontFamily: 'var(--font-montserrat, "Montserrat", sans-serif)' }
@@ -35,23 +48,25 @@ const HONOREES = [
   { name: 'Global Tech Corp', achievement: 'Corporate Excellence' },
 ]
 
-export default function GalaNightTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function GalaNightTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, GALANIGHT_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#0A0A0A',
-    gold: colors?.primary ?? '#D4A853',
-    champagne: colors?.text ?? '#F2E6C9',
-    surface: colors?.surface ?? '#1A1A1A',
-    text: colors?.text ?? '#F2E6C9',
-    muted: colors?.muted ?? '#8A8070',
-    border: '#2A2A2A',
+    bg: raw.bg,
+    gold: raw.primary,
+    champagne: raw.text,
+    surface: raw.surface,
+    text: raw.text,
+    muted: raw.muted,
+    border: raw.border,
   }
 
-  const { companyName, title, eventDate, subEvents, description } = event
+  const { companyName, title, eventDate, subEvents, description, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.corporate
   const company = companyName ?? title
   const firstSub = subEvents[0]
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. GALA HERO ─────────────────────────────────────────────── */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 py-20 text-center overflow-hidden">
@@ -81,7 +96,7 @@ export default function GalaNightTemplate({ event, branding, onRsvpSubmit, color
             {company} presents
           </p>
           <GoldDiamond gold={C.gold} />
-          <h1 style={{ ...fontDisplay, color: C.gold }} className="text-4xl sm:text-6xl md:text-7xl mt-6 mb-2 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.gold }} className="text-4xl @sm:text-5xl @md:text-6xl mt-6 mb-2 leading-tight">
             {title}
           </h1>
           <p style={{ ...fontDisplay, color: C.champagne }} className="text-lg italic mt-2 mb-6">
@@ -95,45 +110,47 @@ export default function GalaNightTemplate({ event, branding, onRsvpSubmit, color
       </section>
 
       {/* ── 2. EVENING PROGRAM ───────────────────────────────────────── */}
-      <motion.section
-        initial="initial"
-        whileInView="animate"
-        viewport={viewport}
-        variants={staggerContainer}
-        className="px-4 sm:px-8 md:px-16 py-20 max-w-3xl mx-auto"
-      >
-        <motion.div variants={staggerItem} className="text-center mb-12">
-          <p className="text-xs uppercase tracking-[0.4em] mb-4" style={{ color: C.muted }}>Programme</p>
-          <GoldDiamond gold={C.gold} />
-          <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">Evening Programme</h2>
-        </motion.div>
+      {sections.schedule !== false && (
+        <motion.section
+          initial="initial"
+          whileInView="animate"
+          viewport={viewport}
+          variants={staggerContainer}
+          className="px-4 @sm:px-8 @md:px-16 py-20 max-w-3xl mx-auto"
+        >
+          <motion.div variants={staggerItem} className="text-center mb-12">
+            <p className="text-xs uppercase tracking-[0.4em] mb-4" style={{ color: C.muted }}>Programme</p>
+            <GoldDiamond gold={C.gold} />
+            <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">Evening Programme</h2>
+          </motion.div>
 
-        <div className="flex flex-col gap-4">
-          {PROGRAM.map((item, i) => (
-            <motion.div
-              key={item.time}
-              variants={staggerItem}
-              className="flex items-center gap-6 px-6 py-4 rounded-2xl"
-              style={{
-                background: C.surface,
-                borderLeft: `3px solid ${C.gold}`,
-              }}
-            >
-              <p className="font-bold text-sm shrink-0 w-20" style={{ color: C.gold }}>{item.time}</p>
-              <p className="text-sm" style={{ color: C.champagne }}>{item.activity}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.section>
+          <div className="flex flex-col gap-4">
+            {PROGRAM.map((item, i) => (
+              <motion.div
+                key={item.time}
+                variants={staggerItem}
+                className="flex items-center gap-6 px-6 py-4 rounded-2xl"
+                style={{
+                  background: C.surface,
+                  borderLeft: `3px solid ${C.gold}`,
+                }}
+              >
+                <p className="font-bold text-sm shrink-0 w-20" style={{ color: C.gold }}>{item.time}</p>
+                <p className="text-sm" style={{ color: C.champagne }}>{item.activity}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+      )}
 
       {/* ── 3. HONOREES ──────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 md:px-16 py-16" style={{ background: C.surface }}>
+      <section className="px-4 @sm:px-8 @md:px-16 py-16" style={{ background: C.surface }}>
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <GoldDiamond gold={C.gold} />
             <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">Honoring</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 @sm:grid-cols-3 gap-6">
             {HONOREES.map((h) => (
               <motion.div
                 key={h.name}
@@ -159,8 +176,13 @@ export default function GalaNightTemplate({ event, branding, onRsvpSubmit, color
         </div>
       </section>
 
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-4xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
+      </section>
+
       {/* ── 4. DRESS CODE ────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-12 text-center">
+      <section className="px-4 @sm:px-8 py-12 text-center">
         <div
           className="inline-block px-10 py-5 mx-auto"
           style={{ border: `1px solid ${C.gold}50` }}
@@ -171,8 +193,8 @@ export default function GalaNightTemplate({ event, branding, onRsvpSubmit, color
       </section>
 
       {/* ── 5. VENUE ─────────────────────────────────────────────────── */}
-      {firstSub && (
-        <section className="px-4 sm:px-8 md:px-16 py-12 max-w-3xl mx-auto">
+      {sections.location !== false && firstSub && (
+        <section className="px-4 @sm:px-8 @md:px-16 py-12 max-w-3xl mx-auto">
           <div className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.gold}30` }}>
             <div className="h-32 flex items-center justify-center" style={{ background: C.surface }}>
               <p style={{ ...fontDisplay, color: C.gold }} className="text-2xl">{firstSub.name}</p>
@@ -186,34 +208,36 @@ export default function GalaNightTemplate({ event, branding, onRsvpSubmit, color
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-8">
-            <GoldDiamond gold={C.gold} />
-            <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">
-              Will You Be Joining Us?
-            </h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-20">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-8">
+              <GoldDiamond gold={C.gold} />
+              <h2 style={{ ...fontDisplay, color: C.gold }} className="text-3xl mt-4">
+                Will You Be Joining Us?
+              </h2>
+            </div>
+            <div
+              className="rounded-2xl p-6 @sm:p-8"
+              style={{ background: C.surface, border: `1px solid ${C.gold}40` }}
+            >
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{
+                  button: C.gold,
+                  buttonText: C.bg,
+                  label: C.champagne,
+                  checkboxAccent: C.gold,
+                  successText: C.champagne,
+                }}
+                inputStyle="underline"
+                successMessage="We look forward to your presence at this elegant evening."
+              />
+            </div>
           </div>
-          <div
-            className="rounded-2xl p-6 sm:p-8"
-            style={{ background: C.surface, border: `1px solid ${C.gold}40` }}
-          >
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{
-                button: C.gold,
-                buttonText: C.bg,
-                label: C.champagne,
-                checkboxAccent: C.gold,
-                successText: C.champagne,
-              }}
-              inputStyle="underline"
-              successMessage="We look forward to your presence at this elegant evening."
-            />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.gold}20` }}>

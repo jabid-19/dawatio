@@ -6,9 +6,21 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const NEON_DEFAULTS = {
+  bg: '#0A0A0F',
+  surface: '#14141F',
+  primary: '#FF2D95',
+  secondary: '#00D4FF',
+  text: '#F0F0F0',
+  muted: '#888888',
+} as const
 
 const fontDisplay = { fontFamily: 'var(--font-space-grotesk, "Space Grotesk", sans-serif)' }
 const fontBody = { fontFamily: 'var(--font-inter, "Inter", sans-serif)' }
@@ -24,34 +36,38 @@ function boxGlow(color: string) {
 const TILE_ICONS = ['🎵', '🥂', '💃', '🎮', '🎤', '🎊']
 const TILE_LABELS = ['Music', 'Drinks', 'Dance', 'Games', 'Karaoke', 'Surprise']
 
-export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function NeonTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, NEON_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#0A0A0F',
-    surface: colors?.surface ?? '#14141F',
-    pink: colors?.primary ?? '#FF2D95',
-    cyan: colors?.secondary ?? '#00D4FF',
-    purple: colors?.primary ?? '#8B5CF6',
-    text: colors?.text ?? '#F0F0F0',
-    muted: colors?.muted ?? '#888888',
+    bg: raw.bg,
+    surface: raw.surface,
+    pink: raw.primary,
+    cyan: raw.secondary,
+    purple: raw.primary,
+    text: raw.text,
+    muted: raw.muted,
   }
 
   const TILE_COLORS = [C.pink, C.cyan, C.purple, C.pink, C.pink, C.cyan]
 
-  const { personName, title, eventDate, subEvents, gallery } = event
+  const { personName, title, eventDate, subEvents, gallery, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.birthday
 
   const name = personName ?? title.split("'s")[0] ?? 'The Star'
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
-      <style>{`
-        @keyframes neon-flicker {
-          0%, 95%, 100% { opacity: 1; }
-          96% { opacity: 0.6; }
-          97% { opacity: 1; }
-          98% { opacity: 0.4; }
-        }
-        .neon-flicker { animation: neon-flicker 5s ease-in-out infinite; }
-      `}</style>
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
+      {!disableEffects && (
+        <style>{`
+          @keyframes neon-flicker {
+            0%, 95%, 100% { opacity: 1; }
+            96% { opacity: 0.6; }
+            97% { opacity: 1; }
+            98% { opacity: 0.4; }
+          }
+          .neon-flicker { animation: neon-flicker 5s ease-in-out infinite; }
+        `}</style>
+      )}
 
       {/* Grid background */}
       <div
@@ -73,7 +89,7 @@ export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: 
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 20 }}
-            className="neon-flicker text-5xl sm:text-7xl md:text-8xl font-black leading-none mb-2"
+            className={`${!disableEffects ? 'neon-flicker' : ''} text-5xl @sm:text-6xl @md:text-7xl @lg:text-8xl font-black leading-none mb-2`}
             style={{ ...fontDisplay, color: C.pink, ...neonGlow(C.pink) }}
           >
             {name}
@@ -83,7 +99,7 @@ export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="text-2xl sm:text-3xl font-semibold mt-4"
+            className="text-2xl @sm:text-3xl font-semibold mt-4"
             style={{ color: C.cyan, ...neonGlow(C.cyan) }}
           >
             is turning {new Date(eventDate).getFullYear() - 2005}
@@ -111,9 +127,9 @@ export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: 
           whileInView="animate"
           viewport={viewport}
           variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
         >
-          <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 @sm:grid-cols-3 gap-4">
             {[
               { label: 'DATE', value: subEvents[0].date, color: C.pink },
               { label: 'TIME', value: subEvents[0].time, color: C.cyan },
@@ -138,28 +154,30 @@ export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: 
       )}
 
       {/* ── 3. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12">
-        <p className="text-center text-xs uppercase tracking-widest mb-8" style={{ color: C.muted }}>
-          Dropping in
-        </p>
-        <div className="max-w-2xl mx-auto">
-          <CountdownTimer
-            targetDate={eventDate}
-            boxStyle="boxed"
-            colors={{ box: C.surface, number: C.cyan, label: C.muted, border: '#2A2A3F' }}
-          />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12">
+          <p className="text-center text-xs uppercase tracking-widest mb-8" style={{ color: C.muted }}>
+            Dropping in
+          </p>
+          <div className="max-w-2xl mx-auto">
+            <CountdownTimer
+              targetDate={eventDate}
+              boxStyle="boxed"
+              colors={{ box: C.surface, number: C.cyan, label: C.muted, border: '#2A2A3F' }}
+            />
+          </div>
+        </section>
+      )}
 
       {/* ── 4. PARTY VIBES ───────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
+      <section className="px-4 @sm:px-8 py-16">
         <h2
           style={{ ...fontDisplay, color: C.cyan, ...neonGlow(C.cyan) }}
           className="text-2xl font-bold text-center uppercase tracking-widest mb-10"
         >
           What to Expect
         </h2>
-        <div className="max-w-3xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="max-w-3xl mx-auto grid grid-cols-2 @sm:grid-cols-3 gap-4">
           {TILE_ICONS.map((icon, i) => (
             <motion.div
               key={i}
@@ -186,40 +204,47 @@ export default function NeonTemplate({ event, branding, onRsvpSubmit, colors }: 
       </section>
 
       {/* ── 5. GALLERY ───────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <h2 style={{ ...fontDisplay, color: C.purple, ...neonGlow(C.purple) }}
-          className="text-2xl font-bold uppercase tracking-widest text-center mb-10">
-          Gallery
-        </h2>
-        <div className="max-w-4xl mx-auto">
-          <Gallery images={gallery} variant="grid" columns={3}
-            colors={{ border: C.pink, overlay: `rgba(255, 45, 149, 0.2)` }} />
-        </div>
-      </section>
+      {sections.gallery !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <h2 style={{ ...fontDisplay, color: C.purple, ...neonGlow(C.purple) }}
+            className="text-2xl font-bold uppercase tracking-widest text-center mb-10">
+            Gallery
+          </h2>
+          <div className="max-w-xs mx-auto mb-10" style={{ border: `1px solid ${C.pink}`, borderRadius: '1rem', overflow: 'hidden' }}>
+            <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="portrait" />
+          </div>
+          <div className="max-w-4xl mx-auto">
+            <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="grid" columns={3}
+              colors={{ border: C.pink, overlay: `rgba(255, 45, 149, 0.2)` }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20">
-        <div className="max-w-lg mx-auto">
-          <h2
-            style={{ ...fontDisplay, color: C.pink, ...neonGlow(C.pink) }}
-            className="text-4xl font-black uppercase text-center mb-10"
-          >
-            ARE YOU IN?
-          </h2>
-          <div
-            className="rounded-3xl p-6 sm:p-8"
-            style={{ background: C.surface, border: `1px solid ${C.pink}`, ...boxGlow(C.pink) }}
-          >
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{ button: C.pink, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.pink }}
-              inputStyle="underline"
-              successMessage="SEE YOU THERE ⚡"
-            />
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-20">
+          <div className="max-w-lg mx-auto">
+            <h2
+              style={{ ...fontDisplay, color: C.pink, ...neonGlow(C.pink) }}
+              className="text-4xl font-black uppercase text-center mb-10"
+            >
+              ARE YOU IN?
+            </h2>
+            <div
+              className="rounded-3xl p-6 @sm:p-8"
+              style={{ background: C.surface, border: `1px solid ${C.pink}`, ...boxGlow(C.pink) }}
+            >
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{ button: C.pink, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.pink }}
+                inputStyle="underline"
+                successMessage="SEE YOU THERE ⚡"
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-8 text-center">

@@ -3,9 +3,12 @@
 import { motion } from 'motion/react'
 import { MapPin } from 'lucide-react'
 import type { TemplateProps } from '@/lib/templates-data'
+import { resolveColors } from '@/lib/template-colors'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
 
@@ -29,23 +32,27 @@ function CozyRule({ primary }: { primary: string }) {
   )
 }
 
-export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
-  const C = {
-    bg: colors?.bg ?? '#FAF7F3',
-    terracotta: colors?.primary ?? '#C9622F',
-    terracottaLight: colors?.surface ?? '#F5EAE0',
-    sage: colors?.secondary ?? '#3D6B4F',
-    sageLight: '#E0EDE5',
-    text: colors?.text ?? '#2E1A0A',
-    muted: colors?.muted ?? '#8A6A4A',
-    card: '#FFFFFF',
-    border: '#E5D8C8',
-  }
+const HOUSEWARMING_DEFAULTS = {
+  bg: '#FAF7F3',
+  primary: '#C9622F',
+  surface: '#F5EAE0',
+  secondary: '#3D6B4F',
+  sageLight: '#E0EDE5',
+  text: '#2E1A0A',
+  muted: '#8A6A4A',
+  card: '#FFFFFF',
+  border: '#E5D8C8',
+}
 
-  const { title, eventDate, subEvents, description, hostName, message } = event
+export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const { bg, primary: terracotta, surface: terracottaLight, secondary: sage, sageLight, text, muted, card, border } = resolveColors(colors, HOUSEWARMING_DEFAULTS)
+  const C = { bg, terracotta, terracottaLight, sage, sageLight, text, muted, card, border }
+
+  const { title, eventDate, subEvents, description, hostName, message, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.housewarming
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. COZY HERO ─────────────────────────────────────────────── */}
       <section
@@ -57,7 +64,7 @@ export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, co
             {hostName ? `${hostName} invites you to` : 'You\'re invited to'}
           </p>
           <CozyRule primary={C.terracotta} />
-          <h1 style={{ ...fontDisplay, color: C.terracotta }} className="text-5xl sm:text-7xl mt-4 mb-2 leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.terracotta }} className="text-5xl @sm:text-7xl mt-4 mb-2 leading-tight">
             Housewarming
           </h1>
           {title && title !== 'Housewarming' && (
@@ -78,7 +85,7 @@ export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, co
 
       {/* ── 2. HOME ICONS ────────────────────────────────────────────── */}
       <section className="px-4 py-10" style={{ background: C.terracotta }}>
-        <div className="max-w-2xl mx-auto grid grid-cols-4 gap-4 text-center">
+        <div className="max-w-2xl mx-auto grid grid-cols-2 @sm:grid-cols-4 gap-4 text-center">
           {HOME_ICONS.map((item, i) => (
             <motion.div
               key={item.label}
@@ -95,38 +102,47 @@ export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, co
       </section>
 
       {/* ── 3. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.terracottaLight }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>
-            Opening Our Doors In
-          </p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.card, number: C.terracotta, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.terracottaLight }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-4" style={{ color: C.muted }}>
+              Opening Our Doors In
+            </p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.card, number: C.terracotta, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 4. MESSAGE ───────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-8 py-20 max-w-2xl mx-auto text-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
-          <CozyRule primary={C.terracotta} />
-          <p style={{ ...fontDisplay, color: C.text }} className="text-xl mt-6 leading-relaxed">
-            {message || description || 'We\'ve found our corner of the world and we want to share it with the people who matter most. Come celebrate our new chapter, fill our home with warmth, and let\'s make new memories together.'}
-          </p>
-        </motion.div>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-8 py-20 max-w-2xl mx-auto text-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport}>
+            <CozyRule primary={C.terracotta} />
+            <p style={{ ...fontDisplay, color: C.text }} className="text-xl mt-6 leading-relaxed">
+              {message || description || 'We\'ve found our corner of the world and we want to share it with the people who matter most. Come celebrate our new chapter, fill our home with warmth, and let\'s make new memories together.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
+
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
       </section>
 
       {/* ── 5. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16"
+          className="px-4 @sm:px-8 py-16"
           style={{ background: C.sageLight }}
         >
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-8">
               <h2 style={{ ...fontDisplay, color: C.sage }} className="text-3xl">The Details</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4">
               {subEvents.map((se, i) => (
                 <motion.div
                   key={se.id}
@@ -147,19 +163,21 @@ export default function HousewarmingTemplate({ event, branding, onRsvpSubmit, co
       )}
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16">
-        <div className="max-w-lg mx-auto">
-          <div className="text-center mb-6">
-            <CozyRule primary={C.terracotta} />
-            <h2 style={{ ...fontDisplay, color: C.terracotta }} className="text-3xl mt-4">Come On In</h2>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-16">
+          <div className="max-w-lg mx-auto">
+            <div className="text-center mb-6">
+              <CozyRule primary={C.terracotta} />
+              <h2 style={{ ...fontDisplay, color: C.terracotta }} className="text-3xl mt-4">Come On In</h2>
+            </div>
+            <div className="rounded-2xl p-6 @sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
+              <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+                colors={{ button: C.terracotta, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.sage }}
+                successMessage="Welcome home! We can't wait to see you 🏡" />
+            </div>
           </div>
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: C.card, border: `1px solid ${C.border}` }}>
-            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-              colors={{ button: C.terracotta, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.sage }}
-              successMessage="Welcome home! We can't wait to see you 🏡" />
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.border}` }}>

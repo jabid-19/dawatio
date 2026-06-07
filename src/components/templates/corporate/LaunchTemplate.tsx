@@ -4,9 +4,23 @@ import { motion } from 'motion/react'
 import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const LAUNCH_DEFAULTS = {
+  bg: '#FFFFFF',
+  surface: '#F0FDFA',
+  primary: '#FF6B35',
+  secondary: '#0ABAB5',
+  text: '#0D1117',
+  muted: '#586069',
+  border: '#D1FAF8',
+  card: '#FFFFFF',
+}
 
 const fontDisplay = { fontFamily: 'var(--font-plus-jakarta, "Plus Jakarta Sans", sans-serif)' }
 
@@ -24,17 +38,18 @@ const TEAM = [
   { name: 'Sam Rivera', role: 'Lead Engineer' },
 ]
 
-export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors, disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, LAUNCH_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FFFFFF',
-    dark: colors?.surface ?? '#0D4B5F',
-    orange: colors?.primary ?? '#FF6B35',
-    teal: colors?.secondary ?? '#0ABAB5',
-    surface: colors?.surface ?? '#F0FDFA',
-    text: colors?.text ?? '#0D1117',
-    muted: colors?.muted ?? '#586069',
-    border: '#D1FAF8',
-    card: '#FFFFFF',
+    bg: raw.bg,
+    dark: raw.surface,
+    orange: raw.primary,
+    teal: raw.secondary,
+    surface: raw.surface,
+    text: raw.text,
+    muted: raw.muted,
+    border: raw.border,
+    card: raw.card,
   }
 
   const FLOAT_SHAPES = [
@@ -45,19 +60,20 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
     { size: 15, color: C.teal, x: '50%', y: '40%', delay: '1.5s' },
   ]
 
-  const { companyName, title, eventDate, subEvents, description } = event
+  const { companyName, title, eventDate, subEvents, description, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.corporate
   const company = companyName ?? title
   const firstSub = subEvents[0]
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontDisplay }} className="min-h-screen overflow-x-hidden">
-      <style>{`
+    <div style={{ background: C.bg, color: C.text, ...fontDisplay }} className="@container min-h-screen overflow-x-hidden">
+      {!disableEffects && <style>{`
         @keyframes launch-float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-15px) rotate(5deg); } }
         @keyframes launch-type { from { width: 0; } to { width: 100%; } }
-      `}</style>
+      `}</style>}
 
       {/* ── 1. LAUNCH HERO ───────────────────────────────────────────── */}
-      <section className="relative min-h-screen flex flex-col items-start justify-center px-6 sm:px-12 py-20 overflow-hidden">
+      <section className="relative min-h-screen flex flex-col items-start justify-center px-6 @sm:px-12 py-20 overflow-hidden">
         {/* Floating shapes */}
         {FLOAT_SHAPES.map((s, i) => (
           <div
@@ -67,7 +83,7 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
               width: s.size, height: s.size,
               background: s.color, opacity: 0.15,
               left: s.x, top: s.y,
-              animation: `launch-float ${3 + i}s ease-in-out ${s.delay} infinite`,
+              animation: disableEffects ? undefined : `launch-float ${3 + i}s ease-in-out ${s.delay} infinite`,
             }}
           />
         ))}
@@ -81,10 +97,10 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
           <p className="text-xs uppercase tracking-widest mb-4 font-semibold" style={{ color: C.teal }}>
             {company} presents
           </p>
-          <h1 className="text-4xl sm:text-6xl font-black leading-tight mb-2" style={{ color: C.dark }}>
+          <h1 className="text-4xl @sm:text-6xl font-black leading-tight mb-2" style={{ color: C.dark }}>
             LAUNCHING
           </h1>
-          <h2 className="text-3xl sm:text-5xl font-black leading-tight mb-6" style={{ color: C.teal }}>
+          <h2 className="text-3xl @sm:text-5xl font-black leading-tight mb-6" style={{ color: C.teal }}>
             {title}
           </h2>
 
@@ -107,12 +123,12 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
       </section>
 
       {/* ── 2. FEATURE GRID ──────────────────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-16" style={{ background: C.surface }}>
+      <section className="px-4 @sm:px-8 py-16" style={{ background: C.surface }}>
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-black mb-10 text-center" style={{ color: C.dark }}>
             What to Expect
           </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 @sm:grid-cols-4 gap-4">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
@@ -135,19 +151,26 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
         </div>
       </section>
 
+      {/* ── cover photo ──────────────────────────────────────────────── */}
+      <section className="px-4 @sm:px-8 py-8 max-w-4xl mx-auto">
+        <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="landscape" />
+      </section>
+
       {/* ── 3. COUNTDOWN BAR ─────────────────────────────────────────── */}
-      <div className="px-4 py-6 text-center" style={{ background: C.teal }}>
-        <p className="text-white font-bold mb-2 text-sm uppercase tracking-widest">Launches in</p>
-        <CountdownTimer
-          targetDate={eventDate}
-          boxStyle="inline"
-          colors={{ number: '#FFFFFF', label: '#CCFCF4' }}
-        />
-      </div>
+      {sections.countdown !== false && (
+        <div className="px-4 py-6 text-center" style={{ background: C.teal }}>
+          <p className="text-white font-bold mb-2 text-sm uppercase tracking-widest">Launches in</p>
+          <CountdownTimer
+            targetDate={eventDate}
+            boxStyle="inline"
+            colors={{ number: '#FFFFFF', label: '#CCFCF4' }}
+          />
+        </div>
+      )}
 
       {/* ── 4. SCHEDULE ──────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
-        <section className="px-4 sm:px-8 py-16 max-w-4xl mx-auto">
+      {sections.schedule !== false && subEvents.length > 0 && (
+        <section className="px-4 @sm:px-8 py-16 max-w-4xl mx-auto">
           <h2 className="text-2xl font-black mb-8" style={{ color: C.dark }}>Schedule</h2>
           <div className="flex flex-col gap-3">
             {subEvents.map((se, i) => (
@@ -192,20 +215,22 @@ export default function LaunchTemplate({ event, branding, onRsvpSubmit, colors }
       </section>
 
       {/* ── 6. RSVP ──────────────────────────────────────────────────── */}
-      <section id="rsvp" className="px-4 sm:px-8 py-20" style={{ background: C.dark }}>
-        <div className="max-w-lg mx-auto">
-          <h2 className="text-3xl font-black mb-8 text-white">Get Your Pass 🚀</h2>
-          <div className="rounded-2xl p-6 sm:p-8" style={{ background: C.card }}>
-            <RSVPForm
-              subEvents={subEvents}
-              onSubmit={onRsvpSubmit}
-              colors={{ button: C.teal, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.teal }}
-              inputStyle="bordered"
-              successMessage="You're on the list! 🚀 See you at launch."
-            />
+      {sections.rsvp !== false && (
+        <section id="rsvp" className="px-4 @sm:px-8 py-20" style={{ background: C.dark }}>
+          <div className="max-w-lg mx-auto">
+            <h2 className="text-3xl font-black mb-8 text-white">Get Your Pass 🚀</h2>
+            <div className="rounded-2xl p-6 @sm:p-8" style={{ background: C.card }}>
+              <RSVPForm
+                subEvents={subEvents}
+                onSubmit={onRsvpSubmit}
+                colors={{ button: C.teal, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.teal }}
+                inputStyle="bordered"
+                successMessage="You're on the list! 🚀 See you at launch."
+              />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 7. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-8 text-center" style={{ background: '#081820', borderTop: '1px solid #0A2030' }}>

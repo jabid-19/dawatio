@@ -6,9 +6,23 @@ import type { TemplateProps } from '@/lib/templates-data'
 import CountdownTimer from '../shared/CountdownTimer'
 import RSVPForm from '../shared/RSVPForm'
 import Gallery from '../shared/Gallery'
+import CoverPhoto from '../shared/CoverPhoto'
 import DawatBranding from '../shared/DawatBranding'
 import ShareBar from '../shared/ShareBar'
 import { viewport, staggerContainer, staggerItem } from '@/lib/motion'
+import { resolveColors } from '@/lib/template-colors'
+import { PLACEHOLDER_IMAGES } from '@/lib/placeholder-images'
+
+const STORY_DEFAULTS = {
+  bg: '#FAF5EE',
+  primary: '#7B5C3A',
+  secondary: '#C9A875',
+  text: '#3A2E22',
+  muted: '#8A7A65',
+  surface: '#F2EAE0',
+  card: '#FFFFFF',
+  border: '#E8DDD0',
+}
 
 const fontDisplay = { fontFamily: 'var(--font-libre-baskerville, "Libre Baskerville", serif)' }
 const fontBody = { fontFamily: 'var(--font-source-sans, "Source Sans 3", sans-serif)' }
@@ -20,24 +34,26 @@ const CHAPTERS = [
   { num: '04', title: 'Forever Starts', icon: '∞' },
 ]
 
-export default function StoryTemplate({ event, branding, onRsvpSubmit, colors }: TemplateProps) {
+export default function StoryTemplate({ event, branding, onRsvpSubmit, colors, disableEffects: _disableEffects }: TemplateProps) {
+  const raw = resolveColors(colors, STORY_DEFAULTS)
   const C = {
-    bg: colors?.bg ?? '#FAF5EE',
-    primary: colors?.primary ?? '#7B5C3A',
-    secondary: colors?.secondary ?? '#C9A875',
-    text: colors?.text ?? '#3A2E22',
-    muted: colors?.muted ?? '#8A7A65',
-    card: '#FFFFFF',
-    border: '#E8DDD0',
-    sepia: colors?.surface ?? '#F2EAE0',
+    bg: raw.bg,
+    primary: raw.primary,
+    secondary: raw.secondary,
+    text: raw.text,
+    muted: raw.muted,
+    card: raw.card,
+    border: raw.border,
+    sepia: raw.surface,
   }
 
-  const { coupleNames, title, eventDate, subEvents, description, gallery } = event
+  const { coupleNames, title, eventDate, subEvents, description, gallery, coverImage, sections } = event
+  const placeholders = PLACEHOLDER_IMAGES.engagement
   const name1 = coupleNames?.partner1 ?? title.split('&')[0]?.trim() ?? 'Partner 1'
   const name2 = coupleNames?.partner2 ?? title.split('&')[1]?.trim().split(' ')[0] ?? 'Partner 2'
 
   return (
-    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="min-h-screen overflow-x-hidden">
+    <div style={{ background: C.bg, color: C.text, ...fontBody }} className="@container min-h-screen overflow-x-hidden">
 
       {/* ── 1. FULL-BLEED HERO ───────────────────────────────────────── */}
       <section
@@ -69,11 +85,11 @@ export default function StoryTemplate({ event, branding, onRsvpSubmit, colors }:
             <div className="h-px flex-1" style={{ background: C.secondary }} />
           </div>
 
-          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl sm:text-7xl leading-tight mb-4">
+          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl @sm:text-7xl leading-tight mb-4">
             {name1}
           </h1>
           <p style={{ ...fontDisplay, color: C.secondary }} className="text-4xl italic mb-4">&</p>
-          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl sm:text-7xl leading-tight">
+          <h1 style={{ ...fontDisplay, color: C.text }} className="text-5xl @sm:text-7xl leading-tight">
             {name2}
           </h1>
 
@@ -94,7 +110,7 @@ export default function StoryTemplate({ event, branding, onRsvpSubmit, colors }:
 
       {/* ── 2. CHAPTER MARKERS ──────────────────────────────────────────── */}
       <section className="px-4 py-12" style={{ background: C.primary }}>
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="max-w-4xl mx-auto grid grid-cols-2 @sm:grid-cols-4 gap-4">
           {CHAPTERS.map((ch, i) => (
             <motion.div
               key={ch.num}
@@ -115,52 +131,61 @@ export default function StoryTemplate({ event, branding, onRsvpSubmit, colors }:
       </section>
 
       {/* ── 3. COUNTDOWN ─────────────────────────────────────────────── */}
-      <section className="px-4 py-12" style={{ background: C.sepia }}>
-        <div className="max-w-2xl mx-auto">
-          <p className="text-center text-xs uppercase tracking-widest mb-6" style={{ color: C.muted }}>Counting down</p>
-          <CountdownTimer targetDate={eventDate} boxStyle="boxed"
-            colors={{ box: C.card, number: C.primary, label: C.muted, border: C.border }} />
-        </div>
-      </section>
+      {sections.countdown !== false && (
+        <section className="px-4 py-12" style={{ background: C.sepia }}>
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-xs uppercase tracking-widest mb-6" style={{ color: C.muted }}>Counting down</p>
+            <CountdownTimer targetDate={eventDate} boxStyle="boxed"
+              colors={{ box: C.card, number: C.primary, label: C.muted, border: C.border }} />
+          </div>
+        </section>
+      )}
 
       {/* ── 4. OUR STORY ────────────────────────────────────────────────── */}
-      <section className="px-6 sm:px-12 py-24 max-w-3xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewport}
-        >
-          <p className="text-xs uppercase tracking-[0.4em] mb-3" style={{ color: C.muted }}>Our Love Story</p>
-          <div className="flex items-center gap-4 mb-8">
-            <div className="h-px flex-1" style={{ background: C.border }} />
-            <span style={{ color: C.secondary }}>✦</span>
-            <div className="h-px flex-1" style={{ background: C.border }} />
-          </div>
-          <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl sm:text-4xl mb-8 leading-snug">
-            "Every great love story begins with a chance encounter..."
-          </h2>
-          <p className="text-base leading-loose" style={{ color: C.muted }}>
-            {description || 'From the moment we met, we knew something extraordinary was unfolding. Every shared laugh, every quiet evening, every adventure has led us to this — a promise to walk together through every chapter that follows. We are overjoyed to share this beautiful milestone with the people who have shaped our story.'}
-          </p>
-        </motion.div>
-      </section>
+      {sections.about !== false && (
+        <section className="px-6 @sm:px-12 py-24 max-w-3xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewport}
+          >
+            <p className="text-xs uppercase tracking-[0.4em] mb-3" style={{ color: C.muted }}>Our Love Story</p>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="h-px flex-1" style={{ background: C.border }} />
+              <span style={{ color: C.secondary }}>✦</span>
+              <div className="h-px flex-1" style={{ background: C.border }} />
+            </div>
+            <h2 style={{ ...fontDisplay, color: C.text }} className="text-3xl @sm:text-4xl mb-8 leading-snug">
+              "Every great love story begins with a chance encounter..."
+            </h2>
+            <p className="text-base leading-loose" style={{ color: C.muted }}>
+              {description || 'From the moment we met, we knew something extraordinary was unfolding. Every shared laugh, every quiet evening, every adventure has led us to this — a promise to walk together through every chapter that follows. We are overjoyed to share this beautiful milestone with the people who have shaped our story.'}
+            </p>
+          </motion.div>
+        </section>
+      )}
 
       {/* ── 5. PHOTO GALLERY ─────────────────────────────────────────────── */}
-      <section className="py-16" style={{ background: C.sepia }}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-8">
-          <div className="text-center mb-8">
-            <p className="text-xs uppercase tracking-widest" style={{ color: C.muted }}>Our Moments</p>
+      {sections.gallery !== false && (
+        <section className="py-16" style={{ background: C.sepia }}>
+          <div className="max-w-4xl mx-auto px-4 @sm:px-8">
+            <div className="text-center mb-8">
+              <p className="text-xs uppercase tracking-widest" style={{ color: C.muted }}>Our Moments</p>
+            </div>
+            <div className="w-48 mx-auto mb-10">
+              <CoverPhoto src={coverImage} fallback={placeholders.cover} alt={title} shape="circle" />
+            </div>
+            <Gallery images={gallery} fallbackImages={placeholders.gallery} variant="masonry" columns={3}
+              colors={{ overlay: `${C.primary}33`, border: C.border }} />
           </div>
-          <Gallery images={gallery} variant="masonry" columns={3}
-            colors={{ overlay: `${C.primary}33`, border: C.border }} />
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 6. EVENTS ────────────────────────────────────────────────── */}
-      {subEvents.length > 0 && (
+      {sections.schedule !== false && subEvents.length > 0 && (
         <motion.section
           initial="initial" whileInView="animate" viewport={viewport} variants={staggerContainer}
-          className="px-4 sm:px-8 py-16 max-w-3xl mx-auto"
+          className="px-4 @sm:px-8 py-16 max-w-3xl mx-auto"
         >
           <div className="text-center mb-10">
             <p className="text-xs uppercase tracking-widest mb-2" style={{ color: C.muted }}>Join Our Story</p>
@@ -188,24 +213,26 @@ export default function StoryTemplate({ event, branding, onRsvpSubmit, colors }:
       )}
 
       {/* ── 7. RSVP — LOVE LETTER STYLE ──────────────────────────────── */}
-      <section className="px-4 sm:px-8 py-20" style={{ background: C.sepia }}>
-        <div className="max-w-lg mx-auto">
-          <div
-            className="rounded-2xl p-8 sm:p-10"
-            style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.primary}15` }}
-          >
-            <div className="text-center mb-8">
-              <p style={{ color: C.secondary }} className="text-3xl mb-2">✦</p>
-              <h2 style={{ ...fontDisplay, color: C.text }} className="text-2xl">Will You Join Our Story?</h2>
-              <p className="text-sm mt-2" style={{ color: C.muted }}>Your presence would mean the world to us.</p>
+      {sections.rsvp !== false && (
+        <section className="px-4 @sm:px-8 py-20" style={{ background: C.sepia }}>
+          <div className="max-w-lg mx-auto">
+            <div
+              className="rounded-2xl p-5 @sm:p-8 @md:p-10"
+              style={{ background: C.card, border: `1px solid ${C.border}`, boxShadow: `0 4px 24px ${C.primary}15` }}
+            >
+              <div className="text-center mb-8">
+                <p style={{ color: C.secondary }} className="text-3xl mb-2">✦</p>
+                <h2 style={{ ...fontDisplay, color: C.text }} className="text-2xl">Will You Join Our Story?</h2>
+                <p className="text-sm mt-2" style={{ color: C.muted }}>Your presence would mean the world to us.</p>
+              </div>
+              <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
+                colors={{ button: C.primary, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.secondary }}
+                inputStyle="underline"
+                successMessage="We can't wait to celebrate with you!" />
             </div>
-            <RSVPForm subEvents={subEvents} onSubmit={onRsvpSubmit}
-              colors={{ button: C.primary, buttonText: '#FFFFFF', label: C.text, checkboxAccent: C.secondary }}
-              inputStyle="underline"
-              successMessage="We can't wait to celebrate with you!" />
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── 8. FOOTER ────────────────────────────────────────────────── */}
       <footer className="px-4 py-10 text-center" style={{ borderTop: `1px solid ${C.border}` }}>
