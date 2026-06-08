@@ -74,7 +74,7 @@ function toTemplateEvent(event: DawatEvent): TemplateProps['event'] {
     personName: event.personName ?? (event.type === 'birthday' ? event.title.split("'s")[0] ?? event.title : undefined),
     companyName: event.companyName ?? (event.type === 'corporate' ? event.title : undefined),
     hostName: event.hostName ?? event.title,
-    message: event.message ?? (resolved.aboutHeading || undefined),
+    message: event.message ?? undefined,
     sections: resolved.sections,
   }
 }

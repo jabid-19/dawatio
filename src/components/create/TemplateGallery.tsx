@@ -263,7 +263,7 @@ function SectionRow({
       </div>
 
       {/* Horizontal scroll row */}
-      <div className="overflow-x-auto -mx-6 px-6 [&::-webkit-scrollbar]:hidden pb-4">
+      <div className="overflow-x-auto [&::-webkit-scrollbar]:hidden pb-4">
         <motion.div
           className="flex gap-4"
           variants={containerVariants}

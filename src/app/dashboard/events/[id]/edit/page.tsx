@@ -5,8 +5,10 @@ import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import { Plus, Trash2, Lock } from 'lucide-react'
 import { getEventForEdit, saveEvent } from '@/lib/events-store'
-import { DawatEvent, TEMPLATES, planSatisfies, TemplateContent, TemplateSectionKey } from '@/lib/dummy-data'
+import { DawatEvent, TEMPLATES, planSatisfies, TemplateSectionKey } from '@/lib/dummy-data'
 import { resolveContent } from '@/lib/template-content'
+import { TEMPLATE_CONFIGS } from '@/lib/templates-data'
+import type { SectionKey } from '@/lib/schemas/event'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import PlanGate from '@/components/ui/PlanGate'
@@ -50,7 +52,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
     setEvent((prev) => prev ? { ...prev, [key]: value } : prev)
   }
 
-  function updateContent<K extends keyof TemplateContent>(key: K, value: TemplateContent[K]) {
+  function updateContent(key: 'galleryImages', value: string[]) {
     setEvent((prev) => prev ? { ...prev, templateContent: { ...prev.templateContent, [key]: value } } : prev)
   }
 
@@ -103,7 +105,7 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap cursor-pointer ${
-                activeTab === tab ? 'bg-surface text-ink shadow-[var(--shadow-card)]' : 'text-ink-muted hover:text-ink'
+                activeTab === tab ? 'bg-surface text-ink shadow-(--shadow-card)' : 'text-ink-muted hover:text-ink'
               }`}
             >
               {tab}
@@ -287,139 +289,103 @@ export default function EditEventPage({ params }: { params: Promise<{ id: string
           {/* Content */}
           {activeTab === 'Content' && (() => {
             const resolved = resolveContent(event)
-            const sections = resolved.sections
+            const templateConfig = TEMPLATE_CONFIGS.find((t) => t.id === event.template)
+            const supportedSections = templateConfig?.supportedSections ?? []
+            const supportedFields = templateConfig?.supportedFields ?? []
+            const hasGallery = supportedSections.includes('gallery')
             const imgs = event.templateContent?.galleryImages ?? resolved.galleryImages
+
+            const getSectionVisible = (key: SectionKey) => {
+              const tc = event.templateContent?.sections
+              if (tc && key in tc) return !!tc[key as TemplateSectionKey]
+              return supportedSections.includes(key)
+            }
+
             return (
               <div className="space-y-4">
-                {/* Hero */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-ink">Hero</p>
-                    <span className="text-xs text-ink-muted bg-border/60 rounded-full px-2 py-0.5">Always visible</span>
-                  </div>
-                  <Input id="heroTagline" label="Tagline" value={event.templateContent?.heroTagline ?? ''} placeholder={resolved.heroTagline} onChange={(e) => updateContent('heroTagline', e.target.value)} />
-                </div>
-
-                {/* About */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="About section" checked={sections.about} onChange={(v) => updateSection('about', v)} />
-                  {sections.about && (
-                    <>
-                      <Input id="aboutLabel" label="Section label" value={event.templateContent?.aboutLabel ?? ''} placeholder={resolved.aboutLabel} onChange={(e) => updateContent('aboutLabel', e.target.value)} />
-                      <Input id="aboutHeading" label="Section heading" value={event.templateContent?.aboutHeading ?? ''} placeholder={resolved.aboutHeading || 'Heading (optional)'} onChange={(e) => updateContent('aboutHeading', e.target.value)} />
-                      <p className="text-xs text-ink-muted">Body text is the event description — edit it in Basic Info.</p>
-                    </>
-                  )}
-                </div>
-
-                {/* Countdown */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="Countdown" checked={sections.countdown} onChange={(v) => updateSection('countdown', v)} />
-                  {sections.countdown && (
-                    <>
-                      <Input id="countdownLabel" label="Label" value={event.templateContent?.countdownLabel ?? ''} placeholder={resolved.countdownLabel} onChange={(e) => updateContent('countdownLabel', e.target.value)} />
-                      <p className="text-xs text-ink-muted">Countdown section is shown in Bloom template only.</p>
-                    </>
-                  )}
-                </div>
-
-                {/* Schedule */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="Schedule section" checked={sections.schedule} onChange={(v) => updateSection('schedule', v)} />
-                  {sections.schedule && (
-                    <>
-                      <Input id="scheduleLabel" label="Section label" value={event.templateContent?.scheduleLabel ?? ''} placeholder={resolved.scheduleLabel} onChange={(e) => updateContent('scheduleLabel', e.target.value)} />
-                      <Input id="scheduleHeading" label="Section heading" value={event.templateContent?.scheduleHeading ?? ''} placeholder={resolved.scheduleHeading || 'Heading (optional)'} onChange={(e) => updateContent('scheduleHeading', e.target.value)} />
-                      <p className="text-xs text-ink-muted">Schedule entries are managed in the Sub-Events tab.</p>
-                    </>
-                  )}
-                </div>
-
-                {/* Location */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="Location section" checked={sections.location} onChange={(v) => updateSection('location', v)} />
-                  {sections.location && (
-                    <Input id="locationLabel" label="Section label" value={event.templateContent?.locationLabel ?? ''} placeholder={resolved.locationLabel} onChange={(e) => updateContent('locationLabel', e.target.value)} />
-                  )}
-                </div>
-
-                {/* Gallery */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="Gallery section" checked={sections.gallery} onChange={(v) => updateSection('gallery', v)} />
-                  {sections.gallery && (
-                    <>
-                      <Input id="galleryLabel" label="Section label" value={event.templateContent?.galleryLabel ?? ''} placeholder={resolved.galleryLabel} onChange={(e) => updateContent('galleryLabel', e.target.value)} />
-                      <Input id="galleryHeading" label="Section heading" value={event.templateContent?.galleryHeading ?? ''} placeholder={resolved.galleryHeading || 'Heading (optional)'} onChange={(e) => updateContent('galleryHeading', e.target.value)} />
-                      <p className="text-sm font-medium text-ink">Images</p>
-                      {imgs.map((url, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <Input
-                            id={`gallery-img-${i}`}
-                            label=""
-                            value={url}
-                            placeholder="https://example.com/image.jpg"
-                            onChange={(e) => {
-                              const next = [...imgs]
-                              next[i] = e.target.value
-                              updateContent('galleryImages', next)
-                            }}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => updateContent('galleryImages', imgs.filter((_, j) => j !== i))}
-                            className="p-2 text-ink-muted hover:text-danger transition-colors cursor-pointer shrink-0 mt-0.5"
-                            aria-label="Remove image"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ))}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={imgs.length >= 6}
-                        onClick={() => updateContent('galleryImages', [...imgs, ''])}
-                        className="gap-2"
-                      >
-                        <Plus className="w-4 h-4" />
-                        Add Image
-                      </Button>
-                    </>
-                  )}
-                </div>
-
-                {/* Gift */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="Gift section" checked={sections.gift} onChange={(v) => updateSection('gift', v)} />
-                  {sections.gift && (
-                    <>
-                      <Input id="giftLabel" label="Section label" value={event.templateContent?.giftLabel ?? ''} placeholder={resolved.giftLabel} onChange={(e) => updateContent('giftLabel', e.target.value)} />
-                      <Input id="giftHeading" label="Heading" value={event.templateContent?.giftHeading ?? ''} placeholder={resolved.giftHeading} onChange={(e) => updateContent('giftHeading', e.target.value)} />
+                {/* Identity fields */}
+                {supportedFields.length > 0 && (
+                  <div className="bg-cream rounded-xl border border-border p-4 space-y-4">
+                    <p className="text-sm font-semibold text-ink">About the event</p>
+                    {supportedFields.includes('coupleNames') && (
+                      <>
+                        <Input id="partner1" label="Partner 1 name" value={event.coupleNames?.partner1 ?? ''} placeholder="Partner 1" onChange={(e) => setEvent((prev) => prev ? { ...prev, coupleNames: { partner1: e.target.value, partner2: prev.coupleNames?.partner2 ?? '' } } : prev)} />
+                        <Input id="partner2" label="Partner 2 name" value={event.coupleNames?.partner2 ?? ''} placeholder="Partner 2" onChange={(e) => setEvent((prev) => prev ? { ...prev, coupleNames: { partner1: prev.coupleNames?.partner1 ?? '', partner2: e.target.value } } : prev)} />
+                      </>
+                    )}
+                    {supportedFields.includes('personName') && (
+                      <Input id="personName" label="Celebrant's name" value={event.personName ?? ''} placeholder="Name" onChange={(e) => updateField('personName', e.target.value)} />
+                    )}
+                    {supportedFields.includes('companyName') && (
+                      <Input id="companyName" label="Company / Organisation" value={event.companyName ?? ''} placeholder="Company name" onChange={(e) => updateField('companyName', e.target.value)} />
+                    )}
+                    {supportedFields.includes('hostName') && (
+                      <Input id="hostName" label="Host name" value={event.hostName ?? ''} placeholder="Host name" onChange={(e) => updateField('hostName', e.target.value)} />
+                    )}
+                    {supportedFields.includes('message') && (
                       <div className="flex flex-col gap-1.5">
-                        <label htmlFor="giftBody" className="text-sm font-medium text-ink">Message</label>
-                        <textarea
-                          id="giftBody"
-                          rows={3}
-                          value={event.templateContent?.giftBody ?? ''}
-                          placeholder={resolved.giftBody}
-                          onChange={(e) => updateContent('giftBody', e.target.value)}
-                          className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-ink placeholder:text-ink-light focus:outline-none focus-visible:ring-2 focus-visible:ring-accent resize-none"
+                        <label htmlFor="message" className="text-sm font-medium text-ink">Welcome message <span className="text-ink-light font-normal">(optional)</span></label>
+                        <textarea id="message" rows={3} value={event.message ?? ''} placeholder="A warm message for your guests…" onChange={(e) => updateField('message', e.target.value.slice(0, 300))} className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm text-ink placeholder:text-ink-light focus:outline-none focus-visible:ring-2 focus-visible:ring-accent resize-none" />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Gallery images */}
+                {hasGallery && (
+                  <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
+                    <p className="text-sm font-semibold text-ink">Gallery photos</p>
+                    {imgs.map((url, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Input
+                          id={`gallery-img-${i}`}
+                          label=""
+                          value={url}
+                          placeholder="https://example.com/image.jpg"
+                          onChange={(e) => {
+                            const next = [...imgs]
+                            next[i] = e.target.value
+                            updateContent('galleryImages', next)
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => updateContent('galleryImages', imgs.filter((_, j) => j !== i))}
+                          className="p-2 text-ink-muted hover:text-danger transition-colors cursor-pointer shrink-0 mt-0.5"
+                          aria-label="Remove image"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={imgs.length >= 8}
+                      onClick={() => updateContent('galleryImages', [...imgs, ''])}
+                      className="gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Add Photo
+                    </Button>
+                  </div>
+                )}
+
+                {/* Section toggles — only for sections the template actually renders */}
+                {supportedSections.length > 0 && (
+                  <div className="space-y-3">
+                    <p className="text-sm font-semibold text-ink px-1">Visible sections</p>
+                    {supportedSections.map((key) => (
+                      <div key={key} className="bg-cream rounded-xl border border-border p-4">
+                        <SectionToggle
+                          label={{ about: 'About', countdown: 'Countdown', schedule: 'Schedule', location: 'Location', gallery: 'Gallery', rsvp: 'RSVP' }[key]}
+                          checked={getSectionVisible(key)}
+                          onChange={(v) => updateSection(key as TemplateSectionKey, v)}
                         />
                       </div>
-                    </>
-                  )}
-                </div>
-
-                {/* RSVP */}
-                <div className="bg-cream rounded-xl border border-border p-4 space-y-3">
-                  <SectionToggle label="RSVP section" checked={sections.rsvp} onChange={(v) => updateSection('rsvp', v)} />
-                  {sections.rsvp && (
-                    <>
-                      <Input id="rsvpLabel" label="Section label" value={event.templateContent?.rsvpLabel ?? ''} placeholder={resolved.rsvpLabel} onChange={(e) => updateContent('rsvpLabel', e.target.value)} />
-                      <Input id="rsvpHeading" label="Heading" value={event.templateContent?.rsvpHeading ?? ''} placeholder={resolved.rsvpHeading} onChange={(e) => updateContent('rsvpHeading', e.target.value)} />
-                    </>
-                  )}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )
           })()}

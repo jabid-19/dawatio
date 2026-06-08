@@ -23,26 +23,11 @@ export type TemplateSectionKey =
   | 'schedule'
   | 'location'
   | 'gallery'
-  | 'gift'
   | 'rsvp'
 
 export interface TemplateContent {
   sections?: Partial<Record<TemplateSectionKey, boolean>>
-  heroTagline?: string
-  aboutLabel?: string
-  aboutHeading?: string
-  countdownLabel?: string
-  scheduleLabel?: string
-  scheduleHeading?: string
-  locationLabel?: string
-  galleryLabel?: string
-  galleryHeading?: string
   galleryImages?: string[]
-  giftLabel?: string
-  giftHeading?: string
-  giftBody?: string
-  rsvpLabel?: string
-  rsvpHeading?: string
 }
 
 export interface DawatEvent {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import { toast } from 'sonner'
@@ -14,8 +14,6 @@ import { DetailsForm } from '@/components/create/DetailsForm'
 import { CustomizeForm } from '@/components/create/CustomizeForm'
 import { SuccessScreen } from '@/components/create/SuccessScreen'
 import type { CreateFormState } from '@/components/create/LivePreview'
-
-// ─── Default ceremonies ────────────────────────────────────────────────────────
 
 function getDefaultCeremonies(type: EventType): SubEvent[] {
   const id = () => `se_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
@@ -31,8 +29,6 @@ function getDefaultCeremonies(type: EventType): SubEvent[] {
   }
 }
 
-// ─── Initial form state ────────────────────────────────────────────────────────
-
 const initialForm: CreateFormState = {
   type: null,
   title: '',
@@ -40,11 +36,12 @@ const initialForm: CreateFormState = {
   time: '6:00 PM',
   venue: '',
   description: '',
-  template: 'minimal',
+  template: 'simple',
   colorScheme: 1,
   coverImage: null,
   ceremonies: [],
-  templateContent: {},
+  galleryImages: [],
+  sections: {},
   coupleNames: undefined,
   personName: undefined,
   companyName: undefined,
@@ -52,14 +49,32 @@ const initialForm: CreateFormState = {
   message: undefined,
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
 export default function CreatePage() {
   const router = useRouter()
   const [step, setStep] = useState<1 | 2 | 3 | 'success'>(1)
   const [form, setForm] = useState<CreateFormState>(initialForm)
   const [submitting, setSubmitting] = useState(false)
   const [createdEvent, setCreatedEvent] = useState<DawatEvent | null>(null)
+
+  const templateConfig = useMemo(
+    () => TEMPLATE_CONFIGS.find((t) => t.id === form.template),
+    [form.template]
+  )
+
+  const totalSteps = templateConfig?.isComplex ? 3 : 2
+
+  const stepLabel = step === 1
+    ? 'Choose your template'
+    : step === 2
+    ? 'Event details'
+    : 'Customize'
+
+  const stepNumber = step === 1 ? 1 : step === 2 ? 2 : 3
+  const progressPct = step === 1
+    ? `${Math.round(100 / totalSteps)}%`
+    : step === 2
+    ? totalSteps === 2 ? '100%' : '66%'
+    : '100%'
 
   const handleRestore = useCallback((draft: CreateFormState) => {
     setForm(draft)
@@ -115,7 +130,10 @@ export default function CreatePage() {
       template: form.template,
       colorScheme: form.colorScheme,
       description: form.description,
-      templateContent: form.templateContent,
+      templateContent: {
+        galleryImages: form.galleryImages,
+        sections: form.sections as Partial<Record<import('@/lib/dummy-data').TemplateSectionKey, boolean>>,
+      },
       coupleNames: form.coupleNames,
       personName: form.personName,
       companyName: form.companyName,
@@ -140,7 +158,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl">
+    <div className="p-6 lg:p-8 w-full">
       {/* Step indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -148,16 +166,16 @@ export default function CreatePage() {
             className="text-2xl font-bold text-ink"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
-            {step === 1 ? 'Choose your template' : step === 2 ? 'Event details' : 'Customize'}
+            {stepLabel}
           </h1>
           <span className="text-sm text-ink-muted">
-            Step {step === 1 ? 1 : step === 2 ? 2 : 3} of 3
+            Step {stepNumber} of {totalSteps}
           </span>
         </div>
         <div className="h-1 bg-border rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-accent rounded-full"
-            animate={{ width: step === 1 ? '33%' : step === 2 ? '66%' : '100%' }}
+            animate={{ width: progressPct }}
             transition={{ duration: 0.4, ease: easeOut }}
           />
         </div>
@@ -178,33 +196,45 @@ export default function CreatePage() {
               selectedScheme={form.colorScheme}
               onSelect={(templateId, eventType) => {
                 const config = TEMPLATE_CONFIGS.find((t) => t.id === templateId)
-                const isPremium = (config?.colorSchemes?.length ?? 0) > 0
+                const hasPremiumSchemes = (config?.colorSchemes?.length ?? 0) > 0
                 setForm((f) => ({
                   ...f,
                   template: templateId,
                   type: eventType,
                   colorScheme: 1,
                   ceremonies: getDefaultCeremonies(eventType),
+                  sections: {},
+                  galleryImages: [],
+                  coupleNames: undefined,
+                  personName: undefined,
+                  companyName: undefined,
+                  hostName: undefined,
+                  message: undefined,
                 }))
-                if (!isPremium) setStep(2)
+                if (!hasPremiumSchemes) setStep(2)
               }}
               onSchemeChange={(scheme) => setForm((f) => ({ ...f, colorScheme: scheme }))}
               onAdvance={() => setStep(2)}
             />
           )}
+
           {step === 2 && (
             <DetailsForm
               form={form}
+              templateConfig={templateConfig}
               onChange={setForm}
               onBack={() => setStep(1)}
               onNext={() => setStep(3)}
               onSubmit={handleCreate}
               submitting={submitting}
+              isLastStep={totalSteps === 2}
             />
           )}
+
           {step === 3 && (
             <CustomizeForm
               form={form}
+              templateConfig={templateConfig}
               onChange={setForm}
               onBack={() => setStep(2)}
               onSubmit={handleCreate}

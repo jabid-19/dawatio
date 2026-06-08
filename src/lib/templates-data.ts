@@ -1,4 +1,8 @@
+import type { SectionKey } from '@/lib/schemas/event'
+
 export type TemplateCategory = 'wedding' | 'birthday' | 'corporate' | 'engagement' | 'festive' | 'other'
+
+export type TemplateIdentityField = 'coupleNames' | 'personName' | 'companyName' | 'hostName' | 'message'
 
 export interface ColorScheme {
   id: number
@@ -34,6 +38,9 @@ export interface TemplateConfig {
   }
   previewTags: string[]
   colorSchemes: ColorScheme[]
+  isComplex: boolean
+  supportedSections: SectionKey[]
+  supportedFields: TemplateIdentityField[]
 }
 
 export interface RSVPFormData {
@@ -96,6 +103,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'Playfair Display', body: 'DM Sans', displayVar: '--font-playfair', bodyVar: '--font-dm-sans' },
     previewTags: ['romantic', 'floral', 'warm'],
     colorSchemes: [],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'location', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'midnight',
@@ -119,6 +129,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Navy',     bg: '#05101A', surface: '#0D2236', primary: '#64A0C8', secondary: '#B8D4E8', text: '#E8EFF5', muted: '#7A9AB0' },
       { id: 3, label: 'Wine',     bg: '#120810', surface: '#260D24', primary: '#C56A8A', secondary: '#E8C4D0', text: '#F0E6EC', muted: '#907080' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'schedule', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'minimaa',
@@ -142,6 +155,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Stone',   bg: '#F5F4F0', surface: '#ECEAE4', primary: '#2C2C28', secondary: '#8B7355', text: '#2C2C28', muted: '#9A9080' },
       { id: 3, label: 'Cobalt',  bg: '#FFFFFF', surface: '#F0F4FF', primary: '#1A2C6B', secondary: '#C9622F', text: '#1A2C6B', muted: '#6B7A9A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'schedule', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'garden',
@@ -165,6 +181,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Terracotta', bg: '#FAF5EE', surface: '#F0E0D0', primary: '#8B4A2B', secondary: '#D4A853', text: '#2C1810', muted: '#8A7060' },
       { id: 3, label: 'Lavender',   bg: '#F8F4FF', surface: '#EDE4F8', primary: '#5B3D8B', secondary: '#C9A84C', text: '#2A1C3C', muted: '#7A6A8A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'royal',
@@ -188,6 +207,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Crimson', bg: '#F9F0F2', surface: '#F0D8DC', primary: '#8B1A2B', secondary: '#D4A853', text: '#2C1010', muted: '#7A5060' },
       { id: 3, label: 'Emerald', bg: '#F0F9F2', surface: '#D8F0DC', primary: '#1A5C3A', secondary: '#D4A853', text: '#0C2010', muted: '#5A7A62' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'schedule', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
 
   // ─── Birthday ──────────────────────────────────────────────
@@ -209,6 +231,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'Fredoka', body: 'Quicksand', displayVar: '--font-fredoka', bodyVar: '--font-quicksand' },
     previewTags: ['fun', 'colorful', 'party'],
     colorSchemes: [],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['personName'],
   },
   {
     id: 'neon',
@@ -232,6 +257,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Purple', bg: '#080B12', surface: '#12101E', primary: '#8B5CF6', secondary: '#00D4FF', text: '#F0F0F8', muted: '#8080A0' },
       { id: 3, label: 'Green',  bg: '#080F0A', surface: '#101E12', primary: '#00FF87', secondary: '#00D4FF', text: '#F0FFF4', muted: '#70A080' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'gallery', 'rsvp'],
+    supportedFields: ['personName'],
   },
   {
     id: 'pastel-dream',
@@ -255,6 +283,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Sky',   bg: '#F8FEFF', surface: '#E0F8FF', primary: '#5AAACA', secondary: '#B8D4FF', text: '#1A3A4A', muted: '#6A8A9A' },
       { id: 3, label: 'Mint',  bg: '#F4FFF8', surface: '#E0F8E8', primary: '#4AAA80', secondary: '#B8FFD4', text: '#1A3A2A', muted: '#6A9A7A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['personName'],
   },
   {
     id: 'bold-loud',
@@ -278,6 +309,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Electric', bg: '#F5FF00', surface: '#E8EE00', primary: '#0000CC', secondary: '#FF0066', text: '#000000', muted: '#333333' },
       { id: 3, label: 'Dark',     bg: '#0A0A0A', surface: '#1A1A1A', primary: '#AAFF00', secondary: '#FF6B2B', text: '#FFFFFF', muted: '#888888' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'gallery', 'rsvp'],
+    supportedFields: ['personName'],
   },
   {
     id: 'elegant-age',
@@ -301,6 +335,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Gold', bg: '#FDFBF5', surface: '#F0EAD0', primary: '#6B4C2A', secondary: '#C9A84C', text: '#2C2010', muted: '#8A7860' },
       { id: 3, label: 'Slate', bg: '#F5F5F8', surface: '#E8E8F0', primary: '#2C3E60', secondary: '#6B8AAA', text: '#1A2030', muted: '#6A7A8A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'rsvp'],
+    supportedFields: ['personName'],
   },
 
   // ─── Corporate ─────────────────────────────────────────────
@@ -322,6 +359,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'DM Sans', body: 'DM Sans', displayVar: '--font-dm-sans', bodyVar: '--font-dm-sans' },
     previewTags: ['professional', 'clean', 'corporate'],
     colorSchemes: [],
+    isComplex: false,
+    supportedSections: ['about', 'schedule', 'countdown', 'location', 'rsvp'],
+    supportedFields: ['companyName', 'hostName'],
   },
   {
     id: 'summit',
@@ -345,6 +385,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Dark',    bg: '#0D0D12', surface: '#1A1A24', primary: '#3B82F6', secondary: '#00C2FF', text: '#F5F5F8', muted: '#8080A0' },
       { id: 3, label: 'Crimson', bg: '#FAFAFA', surface: '#F5F0F0', primary: '#8B1A2B', secondary: '#E85D9A', text: '#1A0A0D', muted: '#7A5060' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'schedule', 'rsvp'],
+    supportedFields: ['companyName'],
   },
   {
     id: 'boardroom',
@@ -368,6 +411,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Navy',    bg: '#F8F9FC', surface: '#E8ECF5', primary: '#1A2C5F', secondary: '#4A6AAA', text: '#0D1830', muted: '#5A6A80' },
       { id: 3, label: 'Charcoal', bg: '#F5F5F5', surface: '#E5E5E5', primary: '#2C2C2C', secondary: '#888888', text: '#1A1A1A', muted: '#6B6B6B' },
     ],
+    isComplex: false,
+    supportedSections: ['about', 'schedule', 'location', 'rsvp'],
+    supportedFields: ['companyName'],
   },
   {
     id: 'launch',
@@ -391,6 +437,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Purple', bg: '#FFFFFF', surface: '#F4F0FF', primary: '#5B2D8B', secondary: '#FF6B35', text: '#0D1117', muted: '#6B6080' },
       { id: 3, label: 'Forest', bg: '#FFFFFF', surface: '#F0FFF4', primary: '#1A6B3A', secondary: '#00C87F', text: '#0D1117', muted: '#5A7060' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'schedule', 'rsvp'],
+    supportedFields: ['companyName'],
   },
   {
     id: 'gala-night',
@@ -414,6 +463,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Silver', bg: '#0A0A0A', surface: '#1A1A1A', primary: '#C0C0C8', secondary: '#E0E0E8', text: '#F2F2F8', muted: '#8A8A90' },
       { id: 3, label: 'Ruby',   bg: '#0A0A0A', surface: '#1A1A1A', primary: '#C8384A', secondary: '#F0B8C0', text: '#F2E8E8', muted: '#9A7A7A' },
     ],
+    isComplex: false,
+    supportedSections: ['schedule', 'location', 'rsvp'],
+    supportedFields: ['companyName', 'hostName'],
   },
 
   // ─── Engagement ────────────────────────────────────────────
@@ -435,6 +487,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'Playfair Display', body: 'DM Sans', displayVar: '--font-playfair', bodyVar: '--font-dm-sans' },
     previewTags: ['romantic', 'sweet', 'heartfelt'],
     colorSchemes: [],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'golden-ring',
@@ -458,6 +513,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Rose Gold', bg: '#FDF8F5', surface: '#F5E6E0', primary: '#C97B4C', secondary: '#E8B4A0', text: '#2C1810', muted: '#8A6A60' },
       { id: 3, label: 'Silver',    bg: '#F8F8FA', surface: '#E8E8F0', primary: '#8090B0', secondary: '#C0C8D8', text: '#1A2030', muted: '#6A7A90' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'modern-love',
@@ -481,6 +539,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Dark',  bg: '#0D0D0D', surface: '#1A1A1A', primary: '#E8854A', secondary: '#5D8B6F', text: '#F5F5F5', muted: '#888888' },
       { id: 3, label: 'Blue',  bg: '#FFFFFF', surface: '#F0F4FF', primary: '#2C4B8B', secondary: '#C9622F', text: '#0D1830', muted: '#6A7A9A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'story',
@@ -504,6 +565,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Slate',  bg: '#F0F5FA', surface: '#E0EAF5', primary: '#3A5C7B', secondary: '#7AAAC5', text: '#1A2A3A', muted: '#6A7A8A' },
       { id: 3, label: 'Forest', bg: '#F0FAF0', surface: '#D8F0D8', primary: '#2A5C3A', secondary: '#7AAA8A', text: '#1A2A1A', muted: '#5A7A5A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'schedule', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
   {
     id: 'celestial',
@@ -527,6 +591,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Emerald', bg: '#060F0A', surface: '#0D1F15', primary: '#70D8A0', secondary: '#A0D8C0', text: '#E0F8EC', muted: '#70A080' },
       { id: 3, label: 'Gold',    bg: '#0F0B02', surface: '#1F1508', primary: '#D4A853', secondary: '#F0D890', text: '#F8F0D8', muted: '#A09060' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'schedule', 'gallery', 'rsvp'],
+    supportedFields: ['coupleNames'],
   },
 
   // ─── Festive ───────────────────────────────────────────────
@@ -548,6 +615,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'Amiri', body: 'DM Sans', displayVar: '--font-amiri', bodyVar: '--font-dm-sans' },
     previewTags: ['festive', 'traditional', 'warm'],
     colorSchemes: [],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'lantern',
@@ -571,6 +641,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Night', bg: '#0D1F1F', surface: '#1A3030', primary: '#D4841A', secondary: '#E8A030', text: '#F0E8D8', muted: '#8A8070' },
       { id: 3, label: 'Rose',  bg: '#F9F5F5', surface: '#EDE0E0', primary: '#8B3A3A', secondary: '#D4841A', text: '#2A1A1A', muted: '#8A6A6A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName'],
   },
   {
     id: 'iftar-table',
@@ -594,6 +667,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Emerald', bg: '#F0FAF2', surface: '#D8F0DC', primary: '#2A6B3A', secondary: '#8B5A2B', text: '#0C2010', muted: '#5A7A5A' },
       { id: 3, label: 'Ocean',   bg: '#F0F4FA', surface: '#D8E4F5', primary: '#2A4B7B', secondary: '#C9622F', text: '#0A1830', muted: '#5A6A8A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'geometric',
@@ -617,6 +693,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Navy',    bg: '#FFFFFF', surface: '#F0F4FF', primary: '#1A2C6B', secondary: '#C9A84C', text: '#0A1030', muted: '#5A6A8A' },
       { id: 3, label: 'Crimson', bg: '#FFFFFF', surface: '#FFF0F0', primary: '#8B1A2B', secondary: '#C9A84C', text: '#2C0010', muted: '#7A5060' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'festive-night',
@@ -640,6 +719,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Purple', bg: '#080812', surface: '#14142A', primary: '#9B4EAA', secondary: '#D4A853', text: '#F0E8F8', muted: '#8A80A0' },
       { id: 3, label: 'Teal',   bg: '#040C0C', surface: '#0A1818', primary: '#00B8A8', secondary: '#D4A853', text: '#E0F8F8', muted: '#6A9A9A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
 
   // ─── Festive: Puja ─────────────────────────────────────────
@@ -665,6 +747,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Marigold',   bg: '#FFF8E8', surface: '#F5E8C0', primary: '#B8860B', secondary: '#D4622F', text: '#2C2010', muted: '#8A7050' },
       { id: 3, label: 'Vermillion', bg: '#FFF0F0', surface: '#F5D8D8', primary: '#8B1A2B', secondary: '#D4622F', text: '#2C0810', muted: '#8A5060' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
   {
     id: 'puja-mandap',
@@ -688,6 +773,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Rose',     bg: '#FDF5F8', surface: '#F5E0E8', primary: '#8B3A5A', secondary: '#D4A853', text: '#2C1020', muted: '#8A6070' },
       { id: 3, label: 'Forest',   bg: '#F5FAF5', surface: '#E0F0E0', primary: '#2A6B3A', secondary: '#D4A853', text: '#1A2A1A', muted: '#5A7A5A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
   {
     id: 'puja-gold',
@@ -711,6 +799,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Purple',  bg: '#FAF5FF', surface: '#EDE0F8', primary: '#5B2C6F', secondary: '#D4A853', text: '#2A1030', muted: '#7A6A8A' },
       { id: 3, label: 'Teal',    bg: '#F0FAF8', surface: '#D8F0EC', primary: '#1A5C5A', secondary: '#E8A030', text: '#0A2020', muted: '#5A7A78' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
 
   // ─── Festive: New Year's Eve ────────────────────────────────
@@ -736,6 +827,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Silver',   bg: '#080810', surface: '#141420', primary: '#C0C0C8', secondary: '#E0E0E8', text: '#F0F0F8', muted: '#8A8A90' },
       { id: 3, label: 'Rose Gold', bg: '#0A0808', surface: '#1A1010', primary: '#C8826A', secondary: '#F0C8B8', text: '#F8EDE8', muted: '#9A7A70' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
   {
     id: 'nye-fireworks',
@@ -759,6 +853,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Midnight',   bg: '#080308', surface: '#180818', primary: '#C85CF6', secondary: '#E8A0F8', text: '#F8EAF8', muted: '#A070B0' },
       { id: 3, label: 'Teal Burst', bg: '#020C10', surface: '#081820', primary: '#00C8B8', secondary: '#80E8D8', text: '#E0F8F8', muted: '#6A9A9A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
   {
     id: 'nye-glam',
@@ -782,6 +879,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Emerald',   bg: '#020A06', surface: '#081A0E', primary: '#00C878', secondary: '#80E8B8', text: '#E0F8EC', muted: '#6A9A7A' },
       { id: 3, label: 'Burgundy',  bg: '#0A0204', surface: '#1A060C', primary: '#C83A5A', secondary: '#F0A0B8', text: '#F8E0E8', muted: '#9A6070' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: [],
   },
 
   // ─── Other ─────────────────────────────────────────────────
@@ -803,6 +903,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     fonts: { display: 'DM Sans', body: 'DM Sans', displayVar: '--font-dm-sans', bodyVar: '--font-dm-sans' },
     previewTags: ['simple', 'universal', 'clean'],
     colorSchemes: [],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'reunion',
@@ -826,6 +929,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Forest', bg: '#F0F8F0', surface: '#D8F0D8', primary: '#2A5C2A', secondary: '#D4A853', text: '#0C200C', muted: '#5A7A5A' },
       { id: 3, label: 'Slate',  bg: '#F0F4FA', surface: '#D8E4F5', primary: '#2A4B7B', secondary: '#7B4A1E', text: '#0A1830', muted: '#5A6A8A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'graduation',
@@ -849,6 +955,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Crimson', bg: '#FDF8F8', surface: '#F8E8E8', primary: '#8B1A2B', secondary: '#C9A84C', text: '#1A0A0D', muted: '#7A5060' },
       { id: 3, label: 'Forest',  bg: '#F0FDF4', surface: '#D8F5E0', primary: '#1A5C3A', secondary: '#C9A84C', text: '#0C200C', muted: '#5A7A5A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['personName', 'hostName', 'message'],
   },
   {
     id: 'housewarming',
@@ -872,6 +981,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Ocean',      bg: '#F0F4FA', surface: '#D8E4F5', primary: '#2A4B7B', secondary: '#3D6B4F', text: '#0A1830', muted: '#5A6A8A' },
       { id: 3, label: 'Olive',      bg: '#F5F8F0', surface: '#E0ECD8', primary: '#4B6B2A', secondary: '#C9622F', text: '#1A2010', muted: '#6A7A5A' },
     ],
+    isComplex: false,
+    supportedSections: ['countdown', 'about', 'schedule', 'rsvp'],
+    supportedFields: ['hostName', 'message'],
   },
   {
     id: 'anniversary',
@@ -895,6 +1007,9 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
       { id: 2, label: 'Navy',   bg: '#F0F4FA', surface: '#D8E4F5', primary: '#2A4B7B', secondary: '#C9A84C', text: '#0A1030', muted: '#5A6A8A' },
       { id: 3, label: 'Forest', bg: '#F0FAF4', surface: '#D8F0DC', primary: '#2A5C3A', secondary: '#C9A84C', text: '#0C200C', muted: '#5A7A5A' },
     ],
+    isComplex: true,
+    supportedSections: ['countdown', 'about', 'gallery', 'schedule', 'rsvp'],
+    supportedFields: ['coupleNames', 'message'],
   },
 ]
 

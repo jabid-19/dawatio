@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { DawatEvent, EventType, SubEvent, TemplateContent } from '@/lib/dummy-data'
+import { DawatEvent, EventType, SubEvent } from '@/lib/dummy-data'
 import { TemplateRenderer } from '@/lib/template-utils'
 
 export interface CreateFormState {
@@ -15,7 +15,8 @@ export interface CreateFormState {
   colorScheme: number
   coverImage: string | null
   ceremonies: SubEvent[]
-  templateContent: TemplateContent
+  galleryImages: string[]
+  sections: Partial<Record<string, boolean>>
   coupleNames?: { partner1: string; partner2: string }
   personName?: string
   companyName?: string
@@ -60,7 +61,10 @@ export function formToEvent(form: CreateFormState): DawatEvent {
     template: form.template,
     colorScheme: form.colorScheme,
     description: form.description,
-    templateContent: form.templateContent,
+    templateContent: {
+      galleryImages: form.galleryImages,
+      sections: form.sections as Partial<Record<import('@/lib/dummy-data').TemplateSectionKey, boolean>>,
+    },
     coupleNames: form.coupleNames,
     personName: form.personName,
     companyName: form.companyName,
@@ -84,7 +88,8 @@ export function LivePreview({ form, className }: LivePreviewProps) {
       form.colorScheme,
       form.coverImage,
       form.ceremonies,
-      form.templateContent,
+      form.galleryImages,
+      form.sections,
       form.coupleNames,
       form.personName,
       form.companyName,
@@ -96,7 +101,7 @@ export function LivePreview({ form, className }: LivePreviewProps) {
   return (
     <div className={className}>
       {/* Phone mockup frame — 360px keeps @sm: container queries from firing */}
-      <div className="max-w-[360px] mx-auto rounded-[2.5rem] overflow-hidden bg-white shadow-[var(--shadow-modal)] ring-4 ring-black/10 flex flex-col" style={{ height: '700px' }}>
+      <div className="max-w-[360px] mx-auto rounded-[2.5rem] overflow-hidden bg-white shadow-(--shadow-modal) ring-4 ring-black/10 flex flex-col" style={{ height: '700px' }}>
         {/* Status bar */}
         <div className="h-7 bg-black flex items-center justify-center shrink-0">
           <div className="w-16 h-1.5 bg-zinc-700 rounded-full" />

@@ -4,16 +4,18 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Eye, EyeOff, CheckCircle2, Mail, Star, Heart, Sparkles } from 'lucide-react'
+import { Eye, EyeOff, CheckCircle2, Mail, Star, Heart, Sparkles, PartyPopper } from 'lucide-react'
 import { useAuth } from '@/lib/auth-context'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 
-const floatingIcons = [
-  { icon: Heart, x: -52, y: -16, rotate: -15, delay: 0, color: 'text-rose-400' },
-  { icon: Star, x: 48, y: -20, rotate: 12, delay: 0.1, color: 'text-amber-400' },
-  { icon: Sparkles, x: -36, y: 20, rotate: -8, delay: 0.2, color: 'text-accent' },
-  { icon: Mail, x: 40, y: 18, rotate: 10, delay: 0.15, color: 'text-sky-400' },
+
+
+const confettiDots = [
+  { color: '#C9622F', x: -30, y: -30 },
+  { color: '#D4A853', x:  30, y: -30 },
+  { color: '#3D7A5A', x: -30, y:  30 },
+  { color: '#7C3AED', x:  30, y:  30 },
 ]
 
 export default function RegisterPage() {
@@ -49,40 +51,7 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Decorative illustration */}
-      <motion.div
-        className="relative mb-6 flex items-center justify-center"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {floatingIcons.map(({ icon: Icon, x, y, rotate, delay, color }, i) => (
-          <motion.div
-            key={i}
-            className={`absolute ${color}`}
-            style={{ x, y, rotate }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay, duration: 0.4, type: 'spring', stiffness: 200 }}
-          >
-            <Icon className="w-5 h-5" strokeWidth={1.5} />
-          </motion.div>
-        ))}
-        <motion.div
-          className="w-16 h-16 rounded-2xl bg-accent-light flex items-center justify-center shadow-(--shadow-card)"
-          animate={{ y: [0, -4, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <span
-            className="text-2xl font-bold text-accent"
-            style={{ fontFamily: 'var(--font-playfair)' }}
-          >
-            D
-          </span>
-        </motion.div>
-      </motion.div>
 
-      {/* Form content — no card wrapper */}
       <div className="w-full">
         <AnimatePresence mode="wait">
           {success ? (
@@ -92,8 +61,21 @@ export default function RegisterPage() {
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center py-8 gap-4"
             >
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2 className="w-8 h-8 text-success" />
+              {/* Confetti dots */}
+              <div className="relative">
+                {confettiDots.map((dot, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute w-3 h-3 rounded-full"
+                    style={{ backgroundColor: dot.color, top: '50%', left: '50%' }}
+                    initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
+                    animate={{ x: dot.x, y: dot.y, opacity: 0, scale: 0.5 }}
+                    transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+                  />
+                ))}
+                <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center relative z-10">
+                  <CheckCircle2 className="w-8 h-8 text-success" />
+                </div>
               </div>
               <p className="text-lg font-semibold text-ink">Account created!</p>
               <p className="text-sm text-ink-muted">Taking you to your dashboard…</p>
@@ -101,7 +83,7 @@ export default function RegisterPage() {
           ) : (
             <motion.div key="form">
               <h1
-                className="text-2xl font-bold text-ink mb-1"
+                className="text-3xl font-bold text-ink mb-1"
                 style={{ fontFamily: 'var(--font-playfair)' }}
               >
                 Create your account
